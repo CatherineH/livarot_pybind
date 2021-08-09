@@ -16,16 +16,18 @@ pkg_check_modules(2Geom 2geom>=1.1.0)
 pkg_check_modules(SIGC++ REQUIRED sigc++-2.0 )
 pkg_check_modules(glibmm glibmm-2.4)
 pkg_check_modules(Cairo cairo>=1.14)
-
+pkg_check_modules(gtk gtk+-3.0)
+pkg_check_modules(gtkmm gtkmm-3.0)
 
 #add_library(2Geom::2geom ALIAS PkgConfig::2Geom)
 message("cairo librarie ${Cairo_INCLUDE_DIRS}")
 message("sigc++ libraries ${SIGC++_INCLUDE_DIRS}")
 message("2geom libraries ${2Geom_INCLUDE_DIRS}")
+message("gtk libraires ${gtk_INCLUDE_DIRS}")
 python3_add_library(livarot MODULE livarot_pybind.cpp)
 set_property(TARGET livarot PROPERTY CXX_STANDARD 20)
 target_include_directories(livarot PUBLIC ${2Geom_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${SIGC++_INCLUDE_DIRS} ${Python3_INCLUDE_DIRS} 
-	${glibmm_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS})
+	${glibmm_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS} ${gtk_INCLUDE_DIRS} ${gtkmm_INCLUDE_DIRS})
 include_directories(..\\inkscape\\src) 
 
 
