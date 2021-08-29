@@ -27,8 +27,8 @@
 #include <2geom/sbasis-to-bezier.h>
 #include <2geom/curves.h>
 #include <glib.h>
-//#include "helper/geom-curves.h"
-//#include "helper/geom.h"
+#include "geom-curves.h"
+#include "geom.h"
 
 //#include "svg/svg.h"
 
@@ -56,42 +56,6 @@ void  Path::DashPolyline(float head,float tail,float body,int nbD,float *dashs,b
   if ( lastMI >= 0 && lastMI < int(orig_pts.size()) - 1 ) {
     DashSubPath(orig_pts.size() - lastMI, lastMP, orig_pts, head, tail, body, nbD, dashs, stPlain, stOffset);
   }
-}
-
-void  Path::DashPolylineFromStyle(SPStyle *style, float scale, float min_len)
-{
-    if (!style->stroke_dasharray.values.empty()) {
-
-        double dlen = 0.0;
-        // Find total length
-        for (auto & value : style->stroke_dasharray.values) {
-            dlen += value.value * scale;
-        }
-        if (dlen >= min_len) {
-            // Extract out dash pattern (relative positions)
-            double dash_offset = style->stroke_dashoffset.value * scale;
-            size_t n_dash = style->stroke_dasharray.values.size();
-            double *dash = g_new(double, n_dash);
-            for (unsigned i = 0; i < n_dash; i++) {
-                dash[i] = style->stroke_dasharray.values[i].value * scale;
-            }
-
-            // Convert relative positions to absolute positions
-            int    nbD = n_dash;
-            float  *dashs=(float*)malloc((nbD+1)*sizeof(float));
-            while ( dash_offset >= dlen ) dash_offset-=dlen;
-            dashs[0]=dash[0];
-            for (int i=1; i<nbD; i++) {
-                dashs[i]=dashs[i-1]+dash[i];
-            }
-
-            // modulo dlen
-            this->DashPolyline(0.0, 0.0, dlen, nbD, dashs, true, dash_offset);
-
-            free(dashs);
-            g_free(dash);
-        }
-    }
 }
 
 

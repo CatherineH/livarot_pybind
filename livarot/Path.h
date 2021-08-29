@@ -29,7 +29,6 @@ struct PathDescrCubicTo;
 struct PathDescrBezierTo;
 struct PathDescrIntermBezierTo;
 
-class SPStyle;
 
 /*
  * the Path class: a structure to hold path description and their polyline approximation (not kept in sync)
@@ -186,8 +185,6 @@ public:
   // dash the polyline
   // the result is stored in the polyline, so you lose the original. make a copy before if needed
   void  DashPolyline(float head,float tail,float body,int nbD,float *dashs,bool stPlain,float stOffset);
-
-  void  DashPolylineFromStyle(SPStyle *style, float scale, float min_len);
   
   //utilitaire pour inkscape
   void  LoadPath(Geom::Path const &path, Geom::Affine const &tr, bool doTransformation, bool append = false);

@@ -43,6 +43,8 @@ set(livarot_SRC
 	sweep-tree-list.h
 	sweep-tree.h
 	stringstream.h
+	geom.h
+	geom-curves.h
 )
 
 find_package(PkgConfig REQUIRED)
