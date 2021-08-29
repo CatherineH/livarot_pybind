@@ -33,7 +33,7 @@ message("doubleconversion libraries ${DoubleConversion_LIBRARIES}")
 python3_add_library(livarot MODULE livarot_pybind.cpp)
 set_property(TARGET livarot PROPERTY CXX_STANDARD 20)
 target_include_directories(livarot PUBLIC ${2Geom_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${SIGC++_INCLUDE_DIRS} ${Python3_INCLUDE_DIRS} 
-	${glibmm_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS} ${gtk_INCLUDE_DIRS} ${gtkmm_INCLUDE_DIRS})
+	${glibmm_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS} ${gtk_INCLUDE_DIRS} ${gtkmm_INCLUDE_DIRS} ../inkscape/src)
 target_link_libraries(livarot PUBLIC 2geom gsl glib-2.0 ${DoubleConversion_LIBRARIES})
 
 target_compile_definitions(livarot PRIVATE)
