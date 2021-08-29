@@ -16,9 +16,9 @@
 #include <glib.h>
 #include <2geom/affine.h>
 #include "Shape.h"
-#include "livarot/sweep-event-queue.h"
-#include "livarot/sweep-tree-list.h"
-#include "livarot/sweep-tree.h"
+#include "sweep-event-queue.h"
+#include "sweep-tree-list.h"
+#include "sweep-tree.h"
 
 //int   doDebug=0;
 

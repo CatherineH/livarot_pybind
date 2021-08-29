@@ -13,8 +13,8 @@
 #include <memory>
 #include <glib.h>
 #include <2geom/affine.h>
-#include "livarot/Path.h"
-#include "livarot/path-description.h"
+#include "Path.h"
+#include "path-description.h"
 
 /*
  * Reassembling polyline segments into cubic bezier patches

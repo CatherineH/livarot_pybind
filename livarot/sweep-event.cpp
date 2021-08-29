@@ -8,10 +8,10 @@
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
 #include <glib.h>
-#include "livarot/sweep-event-queue.h"
-#include "livarot/sweep-tree.h"
-#include "livarot/sweep-event.h"
-#include "livarot/Shape.h"
+#include "sweep-event-queue.h"
+#include "sweep-tree.h"
+#include "sweep-event.h"
+#include "Shape.h"
 
 SweepEventQueue::SweepEventQueue(int s) : nbEvt(0), maxEvt(s)
 {

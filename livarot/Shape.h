@@ -18,8 +18,8 @@
 #include <vector>
 #include <2geom/point.h>
 
-#include "livarot/LivarotDefs.h"
-#include "object/object-set.h"   // For BooleanOp
+#include "LivarotDefs.h"
+#include "bool-op.h"   // For BooleanOp
 
 class Path;
 class FloatLigne;

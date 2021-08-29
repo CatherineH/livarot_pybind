@@ -10,9 +10,9 @@
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
 
-#include "livarot/Shape.h"
-#include "livarot/Path.h"
-#include "livarot/path-description.h"
+#include "Shape.h"
+#include "Path.h"
+#include "path-description.h"
 #include <glib.h>
 #include <cstdio>
 #include <cstdlib>

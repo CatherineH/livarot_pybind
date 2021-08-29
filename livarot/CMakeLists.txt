@@ -35,12 +35,14 @@ set(livarot_SRC
 	Path.h
 	Shape.h
 	float-line.h
+	bool-op.h
 	int-line.h
 	path-description.h
 	sweep-event-queue.h
 	sweep-event.h
 	sweep-tree-list.h
 	sweep-tree.h
+	stringstream.h
 )
 
 find_package(PkgConfig REQUIRED)
@@ -50,5 +52,5 @@ pkg_check_modules(glib glib-2.0)
 add_library(livarot STATIC ${livarot_SRC})
 
 #add_inkscape_lib(livarot_LIB "${livarot_SRC}")
-target_include_directories(livarot PUBLIC . ${glib_INCLUDE_DIRS} )
+target_include_directories(livarot PUBLIC . ${glib_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS})
 target_link_libraries(livarot PUBLIC 2geom glib-2.0)

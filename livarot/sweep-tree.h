@@ -10,7 +10,7 @@
 #ifndef INKSCAPE_LIVAROT_SWEEP_TREE_H
 #define INKSCAPE_LIVAROT_SWEEP_TREE_H
 
-#include "livarot/AVL.h"
+#include "AVL.h"
 #include <2geom/point.h>
 
 class Shape;

@@ -8,8 +8,8 @@
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
 
-#include "livarot/Path.h"
-#include "livarot/path-description.h"
+#include "Path.h"
+#include "path-description.h"
 
 /*
  * the "outliner"

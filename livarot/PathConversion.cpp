@@ -14,7 +14,7 @@
 #include <2geom/transforms.h>
 #include "Path.h"
 #include "Shape.h"
-#include "livarot/path-description.h"
+#include "path-description.h"
 
 /*
  * path description -> polyline

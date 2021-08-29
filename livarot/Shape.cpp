@@ -14,8 +14,8 @@
 #include <cstdlib>
 #include <glib.h>
 #include "Shape.h"
-#include "livarot/sweep-event-queue.h"
-#include "livarot/sweep-tree-list.h"
+#include "sweep-event-queue.h"
+#include "sweep-tree-list.h"
 
 /*
  * Shape instances handling.

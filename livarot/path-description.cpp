@@ -7,7 +7,7 @@
  * Copyright (C) 2011 Authors
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
-#include "livarot/path-description.h"
+#include "path-description.h"
 #include <2geom/affine.h>
 
 PathDescr *PathDescrMoveTo::clone() const

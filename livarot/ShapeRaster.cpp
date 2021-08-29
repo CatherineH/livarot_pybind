@@ -17,13 +17,13 @@
 
 #include "Shape.h"
 
-#include "livarot/float-line.h"
+#include "float-line.h"
 #include "AlphaLigne.h"
 #include "BitLigne.h"
 
-#include "livarot/sweep-event-queue.h"
-#include "livarot/sweep-tree-list.h"
-#include "livarot/sweep-tree.h"
+#include "sweep-event-queue.h"
+#include "sweep-tree-list.h"
+#include "sweep-tree.h"
 
 /*
  * polygon rasterization: the sweepline algorithm in all its glory

@@ -8,8 +8,8 @@
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
 #include <glib.h>
-#include "livarot/sweep-tree.h"
-#include "livarot/sweep-tree-list.h"
+#include "sweep-tree.h"
+#include "sweep-tree-list.h"
 
 
 SweepTreeList::SweepTreeList(int s) :

@@ -16,9 +16,9 @@
 #include <string>
 #include <cstdlib>
 #include <cstdio>
-#include "livarot/int-line.h"
-#include "livarot/float-line.h"
-#include "livarot/BitLigne.h"
+#include "int-line.h"
+#include "float-line.h"
+#include "BitLigne.h"
 
 IntLigne::IntLigne()
 {
