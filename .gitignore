@@ -3,3 +3,6 @@ linux-build
 CMakeFiles
 CMakeCache.txt
 *~
+html
+latex
+*.conf
