@@ -1,9 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-cmake_minimum_required(VERSION 3.20)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-project(livarot)
 
 set(livarot_SRC
 	path-description.cpp
@@ -55,6 +50,7 @@ pkg_check_modules(2Geom 2geom>=1.1.0)
 pkg_check_modules(glib glib-2.0)
 
 add_library(livarot STATIC ${livarot_SRC})
+set_property(TARGET livarot PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_property(TARGET livarot PROPERTY CXX_STANDARD 17)
 #add_inkscape_lib(livarot_LIB "${livarot_SRC}")
 target_include_directories(livarot PUBLIC . ${glib_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS})
