@@ -9,6 +9,7 @@
  */
 #include "stringstream.h"
 #include <2geom/point.h>
+#include <glib.h>
 
 std::string
 strip_trailing_zeros(std::string str)

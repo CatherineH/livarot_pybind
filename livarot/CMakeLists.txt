@@ -3,6 +3,7 @@
 set(livarot_SRC
 	path-description.cpp
 	Path.cpp
+	stringstream.cpp
 	Shape.cpp
 	sweep-event.cpp
 	sweep-tree.cpp
@@ -34,6 +35,7 @@ set(livarot_SRC
 	stringstream.h
 	path-description.h
 	Path.h
+	stringstream.h
 	bool-op.h
 	Shape.h
 	sweep-event-queue.h
@@ -48,10 +50,11 @@ set(livarot_SRC
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(2Geom 2geom>=1.1.0)
 pkg_check_modules(glib glib-2.0)
+pkg_check_modules(GSL REQUIRED gsl)
 
 add_library(livarot STATIC ${livarot_SRC})
 set_property(TARGET livarot PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_property(TARGET livarot PROPERTY CXX_STANDARD 17)
 #add_inkscape_lib(livarot_LIB "${livarot_SRC}")
 target_include_directories(livarot PUBLIC . ${glib_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS})
-target_link_libraries(livarot PUBLIC 2geom glib-2.0)
+target_link_libraries(livarot PUBLIC 2geom glib-2.0 ${GSL_LDFLAGS})
