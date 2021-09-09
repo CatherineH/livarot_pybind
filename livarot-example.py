@@ -9,7 +9,6 @@ d_string = "M 140.60714,82.398807 112.12372,76.862861 91.415657,97.188406 87.878
 #d_string = "M 0,0 L 0,2 L 2,2 L 2,0 z"
 
 path_vector = livarot.parse_svg_path(d_string)
-print(path_vector)
 my_path = livarot.Path()
 my_path.LoadPathVector(path_vector)
 
