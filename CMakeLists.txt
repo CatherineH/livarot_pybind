@@ -18,10 +18,10 @@ add_subdirectory(livarot)
 
 message("2geom libraries ${2Geom_INCLUDE_DIRS}")
 #python3_add_library(pylivarot MODULE livarot_pybind.cpp)
-pybind11_add_module(pylivarot MODULE livarot_pybind.cpp)
-set_property(TARGET pylivarot PROPERTY CXX_STANDARD 17)
-target_include_directories(pylivarot PUBLIC ${Python3_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS} livarot) 
+pybind11_add_module(_pylivarot MODULE livarot_pybind.cpp)
+set_property(TARGET _pylivarot PROPERTY CXX_STANDARD 17)
+target_include_directories(_pylivarot PUBLIC ${Python3_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS} livarot) 
 
-target_link_libraries(pylivarot PUBLIC glib-2.0 2geom livarot gsl)
+target_link_libraries(_pylivarot PUBLIC glib-2.0 2geom livarot gsl)
 
-target_compile_definitions(pylivarot PRIVATE)
+target_compile_definitions(_pylivarot PRIVATE)
