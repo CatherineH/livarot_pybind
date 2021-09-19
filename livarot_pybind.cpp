@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <2geom/svg-path-parser.h>
+#include <2geom/svg-path-writer.h>
 #include <2geom/path-sink.h>
 #include "livarot/Shape.h"
 #include "livarot/Path.h"
