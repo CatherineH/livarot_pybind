@@ -2,6 +2,7 @@
 #include <2geom/svg-path-parser.h>
 #include <2geom/svg-path-writer.h>
 #include <2geom/path-sink.h>
+#include <2geom/pathvector.h>
 #include "livarot/Shape.h"
 #include "livarot/Path.h"
 #include "livarot/LivarotDefs.h"
@@ -14,12 +15,12 @@ PYBIND11_MODULE(_pylivarot, m) {
     m.doc() = "python bindings to the functionality within livarot"; 
     py::module_ m2geom = m.def_submodule("py2geom", "python bindings to the functionality within 2geom");
     py::class_<Geom::PathVector>(m2geom, "PathVector")
-        .def(py::init<>)
+        .def(py::init<>())
         .def("push_back", &Geom::PathVector::push_back)
-        .def("back", &Geom::PathVector::back)
+        .def("back", py::overload_cast<>(&Geom::PathVector::back))
         .def("boundsFast", &Geom::PathVector::boundsFast);
     py::class_<Geom::Path>(m2geom, "Path")
-        .def(py::init<>)
+        .def(py::init<>())
         .def("setStitching", &Geom::Path::setStitching)
         .def("start", &Geom::Path::start)
         .def("initialPoint", &Geom::Path::initialPoint);
@@ -33,8 +34,8 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("parse", py::overload_cast<std::string const &>(&Geom::SVGPathParser::parse));
     py::class_<Geom::SVGPathWriter>(m2geom, "SVGPathWriter")
         .def(py::init<>())
-        .def("feed", &Geom::SVGPathWriter::feed)
         .def("str", &Geom::SVGPathWriter::str);
+    m2geom.def("parse_svg_path", py::overload_cast<char const *>(&Geom::parse_svg_path));
 
     py::class_<Shape>(m, "Shape")
         .def(py::init<>())
@@ -68,7 +69,15 @@ PYBIND11_MODULE(_pylivarot, m) {
         .value("bool_op_slice", bool_op::bool_op_slice)
         .export_values();
 
+    py::enum_<FirstOrLast>(m, "FirstOrLast")
+        .value("FIRST", FirstOrLast::FIRST)
+        .value("LAST", FirstOrLast::LAST)
+        .export_values();
+
+    py::class_<Path::cut_position>(m, "cut_position")
+        .def_readwrite("piece", &Path::cut_position::piece)
+        .def_readwrite("t", &Path::cut_position::t);
+
     m.def("pathv_to_linear_and_cubic_beziers", pathv_to_linear_and_cubic_beziers);    
-    m.def("parse_svg_path", py::overload_cast<char const *>(&Geom::parse_svg_path));
 
 }
