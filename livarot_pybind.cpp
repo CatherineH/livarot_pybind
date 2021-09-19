@@ -4,29 +4,51 @@
 #include "livarot/Shape.h"
 #include "livarot/Path.h"
 #include "livarot/LivarotDefs.h"
+#include "livarot/geom.h"
 
 namespace py = pybind11;
 
 
 PYBIND11_MODULE(_pylivarot, m) {
-    m.doc() = "python bindings to the functionality within livarot, with some helper classes from 2geom and inkscape"; 
-    py::class_<Geom::PathVector>(m, "PathVector");
-    py::class_<Geom::PathSink>(m, "PathSink");
+    m.doc() = "python bindings to the functionality within livarot"; 
+    py::module_ m2geom = m.def_submodule("py2geom", "python bindings to the functionality within 2geom");
+    py::class_<Geom::PathVector>(m2geom, "PathVector")
+        .def(py::init<>)
+        .def("push_back", &Geom::PathVector::push_back)
+        .def("back", &Geom::PathVector::back)
+        .def("boundsFast", &Geom::PathVector::boundsFast);
+    py::class_<Geom::Path>(m2geom, "Path")
+        .def(py::init<>)
+        .def("setStitching", &Geom::Path::setStitching)
+        .def("start", &Geom::Path::start)
+        .def("initialPoint", &Geom::Path::initialPoint);
+
+    py::class_<Geom::PathSink>(m2geom, "PathSink");
+    py::class_<Geom::PathBuilder, Geom::PathSink>(m2geom, "PathBuilder")
+        .def(py::init<>());
+    py::class_<Geom::SVGPathParser>(m2geom, "SVGPathParser")
+        .def(py::init<Geom::PathSink &>())
+        .def("setZSnapThreshold", &Geom::SVGPathParser::setZSnapThreshold)
+        .def("parse", py::overload_cast<std::string const &>(&Geom::SVGPathParser::parse));
+    py::class_<Geom::SVGPathWriter>(m2geom, "SVGPathWriter")
+        .def(py::init<>())
+        .def("feed", &Geom::SVGPathWriter::feed)
+        .def("str", &Geom::SVGPathWriter::str);
 
     py::class_<Shape>(m, "Shape")
-    .def(py::init<>())
-    .def("getPoint", &Shape::getPoint)
-    .def("hasBackData", &Shape::hasBackData)
-    .def("ConvertToShape", &Shape::ConvertToShape)
-    .def("getEdge", &Shape::getEdge)
-    .def("Booleen", &Shape::Booleen);
+        .def(py::init<>())
+        .def("getPoint", &Shape::getPoint)
+        .def("hasBackData", &Shape::hasBackData)
+        .def("ConvertToShape", &Shape::ConvertToShape)
+        .def("getEdge", &Shape::getEdge)
+        .def("Booleen", &Shape::Booleen);
 
     py::class_<Path>(m, "Path")
-    .def(py::init<>())
-    .def("LoadPathVector", py::overload_cast<Geom::PathVector const &>(&Path::LoadPathVector))
-    .def("ConvertWithBackData", &Path::ConvertWithBackData)
-    .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
-		    py::arg("closeIfNeeded")=true, py::arg("invert")=false);
+        .def(py::init<>())
+        .def("LoadPathVector", py::overload_cast<Geom::PathVector const &>(&Path::LoadPathVector))
+        .def("ConvertWithBackData", &Path::ConvertWithBackData)
+        .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
+                py::arg("closeIfNeeded")=true, py::arg("invert")=false);
 
 
     py::enum_<FillRule>(m, "FillRule")
@@ -36,13 +58,16 @@ PYBIND11_MODULE(_pylivarot, m) {
 	    .value("fill_justDont", FillRule::fill_justDont)
 	    .export_values();
 
-    py::class_<Geom::PathBuilder, Geom::PathSink>(m, "PathBuilder")
-    .def(py::init<>());
-    py::class_<Geom::SVGPathParser>(m, "SVGPathParser")
-    .def(py::init<Geom::PathSink &>())
-    .def("setZSnapThreshold", &Geom::SVGPathParser::setZSnapThreshold)
-    .def("parse", py::overload_cast<std::string const &>(&Geom::SVGPathParser::parse));
+    py::enum_<bool_op>(m, "bool_op")
+        .value("bool_op_union", bool_op::bool_op_union)
+        .value("bool_op_inters", bool_op::bool_op_inters)
+        .value("bool_op_diff", bool_op::bool_op_diff)
+        .value("bool_op_symdiff", bool_op::bool_op_symdiff)
+        .value("bool_op_cut", bool_op::bool_op_cut)
+        .value("bool_op_slice", bool_op::bool_op_slice)
+        .export_values();
 
+    m.def("pathv_to_linear_and_cubic_beziers", pathv_to_linear_and_cubic_beziers);    
     m.def("parse_svg_path", py::overload_cast<char const *>(&Geom::parse_svg_path));
 
 }
