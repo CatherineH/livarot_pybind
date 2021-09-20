@@ -3,7 +3,7 @@ from os.path import dirname, join
 sys.path.append(join(dirname(__file__), "linux-build"))
 
 import _pylivarot.py2geom as py2geom
-from _pylivarot import Path, pathv_to_linear_and_cubic_beziers, Shape, bool_op, cut_position, FillRule, FirstOrLast
+from _pylivarot import *
 
 def Path_for_pathvector(epathv):
     """

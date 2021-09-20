@@ -26,15 +26,21 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("initialPoint", &Geom::Path::initialPoint);
 
     py::class_<Geom::PathSink>(m2geom, "PathSink");
+
     py::class_<Geom::PathBuilder, Geom::PathSink>(m2geom, "PathBuilder")
         .def(py::init<>());
     py::class_<Geom::SVGPathParser>(m2geom, "SVGPathParser")
         .def(py::init<Geom::PathSink &>())
         .def("setZSnapThreshold", &Geom::SVGPathParser::setZSnapThreshold)
+        .def("feed",  py::overload_cast<std::string const &>(&Geom::SVGPathParser::feed))
         .def("parse", py::overload_cast<std::string const &>(&Geom::SVGPathParser::parse));
-    py::class_<Geom::SVGPathWriter>(m2geom, "SVGPathWriter")
+    py::class_<Geom::SVGPathWriter, Geom::PathSink>(m2geom, "SVGPathWriter")
         .def(py::init<>())
         .def("str", &Geom::SVGPathWriter::str);
+
+    m2geom.def("write_svg_path", &Geom::write_svg_path, py::arg("pv"), py::arg("prec")=-1, py::arg("optimize")=false, 
+                py::arg("shorthands")=true);    
+
     m2geom.def("parse_svg_path", py::overload_cast<char const *>(&Geom::parse_svg_path));
 
     py::class_<Shape>(m, "Shape")
