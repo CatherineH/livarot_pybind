@@ -44,7 +44,8 @@ PYBIND11_MODULE(_pylivarot, m) {
 
     m2geom.def("parse_svg_path", py::overload_cast<char const *>(&Geom::parse_svg_path));
 
-    m2geom.def("distance", &Geom::distance);
+    m2geom.def("distance", py::overload_cast<Geom::Point &, Geom::Point &>(&Geom::distance));
+
     py::class_<Shape>(m, "Shape")
         .def(py::init<>())
         .def("getPoint", &Shape::getPoint)

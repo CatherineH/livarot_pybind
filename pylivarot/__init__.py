@@ -18,7 +18,7 @@ def get_threshold(path, threshold):
     if not box:
         return threshold
     diagonal = py2geom.distance(py2geom.Point(box[py2geom.X].min(), box[py2geom.Y].min()),
-     py2geom.Point(box[py2geom.X].max(), py2geom.Point(box[py2geom.Y].max())))
+     py2geom.Point(box[py2geom.X].max(), box[py2geom.Y].max()))
     return threshold * diagonal/ 100 
 
 
