@@ -3,6 +3,7 @@
 #include <2geom/svg-path-writer.h>
 #include <2geom/path-sink.h>
 #include <2geom/pathvector.h>
+#include <2geom/point.h>
 #include "livarot/Shape.h"
 #include "livarot/Path.h"
 #include "livarot/LivarotDefs.h"
@@ -27,6 +28,7 @@ PYBIND11_MODULE(_pylivarot, m) {
 
     py::class_<Geom::PathSink>(m2geom, "PathSink");
     py::class_<Geom::OptRect>(m2geom, "OptRect");
+    py::class_<Geom::Point>(m2geom, "Point");
 
     py::class_<Geom::PathBuilder, Geom::PathSink>(m2geom, "PathBuilder")
         .def(py::init<>());
@@ -44,7 +46,7 @@ PYBIND11_MODULE(_pylivarot, m) {
 
     m2geom.def("parse_svg_path", py::overload_cast<char const *>(&Geom::parse_svg_path));
 
-    m2geom.def("distance", py::overload_cast<Geom::Point &, Geom::Point &>(&Geom::distance));
+    m2geom.def("distance", py::overload_cast<Geom::Point const &, Geom::Point const &>(&Geom::distance));
 
     py::class_<Shape>(m, "Shape")
         .def(py::init<>())
