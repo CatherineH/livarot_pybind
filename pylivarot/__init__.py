@@ -1,8 +1,8 @@
 import sys
 from os.path import dirname, join
-sys.path.append(join(dirname(__file__), "linux-build"))
+sys.path.append(join(dirname(dirname(__file__)), "linux-build"))
 
-import _pylivarot.py2geom as py2geom
+#mport _pylivarot.py2geom as py2geom
 from _pylivarot import *
 
 def Path_for_pathvector(epathv):

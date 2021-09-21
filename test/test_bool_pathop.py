@@ -1,22 +1,21 @@
-from pylivarot import sp_pathvector_boolop, bool_op, FillRule
-import pylivarot.py2geom as py2geom
-from py2geom import SVGPathParser, parse_svg_path, write_svg_path
+from pylivarot import sp_pathvector_boolop, bool_op, FillRule, py2geom
+#from py2geom import SVGPathParser, parse_svg_path, write_svg_path
 
 class TestPathBoolop:
-    def __init__(self) -> None:
+    def setup_method(self):
         self.rectangle_bigger =  "M 0,0 L 0,2 L 2,2 L 2,0 z"
         self.rectangle_smaller = "M 0.5,0.5 L 0.5,1.5 L 1.5,1.5 L 1.5,0.5 z"
         rectangle_outside =  "M 0,1.5 L 0.5,1.5 L 0.5,2.5 L 0,2.5 z"
         rectangle_outside_union = "M 0,0 L 0,1.5 L 0,2 L 0,2.5 L 0.5,2.5 L 0.5,2 L 2,2 L 2,0 L 0,0 z"
-        self.pvRectangleBigger = parse_svg_path(self.rectangle_bigger)
-        self.pvRectangleSmaller = parse_svg_path(self.rectangle_smaller)
-        self.pvRectangleOutside = parse_svg_path(rectangle_outside)
-        self.pvTargetUnion = parse_svg_path(rectangle_outside_union)
-        self.pvEmpty = parse_svg_path("") 
+        self.pvRectangleBigger = py2geom.parse_svg_path(self.rectangle_bigger)
+        self.pvRectangleSmaller = py2geom.parse_svg_path(self.rectangle_smaller)
+        self.pvRectangleOutside = py2geom.parse_svg_path(rectangle_outside)
+        self.pvTargetUnion = py2geom.parse_svg_path(rectangle_outside_union)
+        self.pvEmpty = py2geom.parse_svg_path("") 
 
     def compare_paths(result, target):
-        result_d = write_svg_path(result)
-        target_d = write_svg_path(target)
+        result_d = py2geom.write_svg_path(result)
+        target_d = py2geom.write_svg_path(target)
         assert result_d == target_d
 
     def test_union_outside(self):

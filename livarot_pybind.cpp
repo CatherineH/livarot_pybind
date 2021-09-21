@@ -26,6 +26,7 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("initialPoint", &Geom::Path::initialPoint);
 
     py::class_<Geom::PathSink>(m2geom, "PathSink");
+    py::class_<Geom::OptRect>(m2geom, "OptRect");
 
     py::class_<Geom::PathBuilder, Geom::PathSink>(m2geom, "PathBuilder")
         .def(py::init<>());
@@ -43,6 +44,7 @@ PYBIND11_MODULE(_pylivarot, m) {
 
     m2geom.def("parse_svg_path", py::overload_cast<char const *>(&Geom::parse_svg_path));
 
+    m2geom.def("distance", &Geom::distance);
     py::class_<Shape>(m, "Shape")
         .def(py::init<>())
         .def("getPoint", &Shape::getPoint)
@@ -55,6 +57,7 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def(py::init<>())
         .def("LoadPathVector", py::overload_cast<Geom::PathVector const &>(&Path::LoadPathVector))
         .def("ConvertWithBackData", &Path::ConvertWithBackData)
+	.def("SetBackData", &Path::SetBackData)
         .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
                 py::arg("closeIfNeeded")=true, py::arg("invert")=false);
 
