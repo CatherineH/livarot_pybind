@@ -4,6 +4,7 @@
 #include <2geom/path-sink.h>
 #include <2geom/pathvector.h>
 #include <2geom/point.h>
+#include <2geom/interval.h>
 #include "livarot/Shape.h"
 #include "livarot/Path.h"
 #include "livarot/LivarotDefs.h"
@@ -27,8 +28,17 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("initialPoint", &Geom::Path::initialPoint);
 
     py::class_<Geom::PathSink>(m2geom, "PathSink");
-    py::class_<Geom::OptRect>(m2geom, "OptRect");
-    py::class_<Geom::Point>(m2geom, "Point");
+    py::class_<Geom::Rect>(m2geom, "Rect")
+	    .def("__getitem__", [](Geom::Rect &self, int i) {return self[i];});
+    py::class_<Geom::OptRect>(m2geom, "OptRect")
+	    .def("__getitem__", [](Geom::OptRect &self, int i) { return self.value()[i]; } );
+    py::class_<Geom::Point>(m2geom, "Point")
+	.def(py::init<>())
+	.def(py::init<Geom::Coord &, Geom::Coord &>());
+		
+    py::class_<Geom::Interval>(m2geom, "Interval")
+	.def("max", &Geom::Interval::max)
+	.def("min", &Geom::Interval::min);
 
     py::class_<Geom::PathBuilder, Geom::PathSink>(m2geom, "PathBuilder")
         .def(py::init<>());
@@ -40,6 +50,11 @@ PYBIND11_MODULE(_pylivarot, m) {
     py::class_<Geom::SVGPathWriter, Geom::PathSink>(m2geom, "SVGPathWriter")
         .def(py::init<>())
         .def("str", &Geom::SVGPathWriter::str);
+    py::enum_<Geom::Dim2>(m2geom, "Dim2")
+	   .value("X", Geom::Dim2::X)
+	   .value("Y", Geom::Dim2::Y)
+	   .export_values();
+
 
     m2geom.def("write_svg_path", &Geom::write_svg_path, py::arg("pv"), py::arg("prec")=-1, py::arg("optimize")=false, 
                 py::arg("shorthands")=true);    
@@ -48,29 +63,30 @@ PYBIND11_MODULE(_pylivarot, m) {
 
     m2geom.def("distance", py::overload_cast<Geom::Point const &, Geom::Point const &>(&Geom::distance));
 
-    py::class_<Shape>(m, "Shape")
-        .def(py::init<>())
-        .def("getPoint", &Shape::getPoint)
-        .def("hasBackData", &Shape::hasBackData)
-        .def("ConvertToShape", &Shape::ConvertToShape)
-        .def("getEdge", &Shape::getEdge)
-        .def("Booleen", &Shape::Booleen);
-
-    py::class_<Path>(m, "Path")
-        .def(py::init<>())
-        .def("LoadPathVector", py::overload_cast<Geom::PathVector const &>(&Path::LoadPathVector))
-        .def("ConvertWithBackData", &Path::ConvertWithBackData)
-	.def("SetBackData", &Path::SetBackData)
-        .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
-                py::arg("closeIfNeeded")=true, py::arg("invert")=false);
-
-
     py::enum_<FillRule>(m, "FillRule")
 	    .value("fill_oddEven", FillRule::fill_oddEven)
 	    .value("fill_nonZero", FillRule::fill_nonZero)
 	    .value("fill_positive", FillRule::fill_positive)
 	    .value("fill_justDont", FillRule::fill_justDont)
 	    .export_values();
+
+    py::class_<Shape>(m, "Shape")
+        .def(py::init<>())
+        .def("getPoint", &Shape::getPoint)
+        .def("hasBackData", &Shape::hasBackData)
+        .def("ConvertToShape", &Shape::ConvertToShape, py::arg("a"), py::arg("directed") = fill_nonZero, py::arg("invert")=false)
+        .def("getEdge", &Shape::getEdge)
+        .def("Booleen", &Shape::Booleen, py::arg("a"), py::arg("b"), py::arg("mod"), py::arg("cutPathID") = -1 )
+		.def("ConvertToForme", py::overload_cast<Path *, int &, Path **, bool &>(&Shape::ConvertToForme), py::arg("dest"), py::arg("nbP"), py::arg("orig"), py::arg("splitWhenForced") = false);
+
+    py::class_<Path>(m, "Path")
+        .def(py::init<>())
+        .def("LoadPathVector", py::overload_cast<Geom::PathVector const &>(&Path::LoadPathVector))
+        .def("ConvertWithBackData", &Path::ConvertWithBackData)
+        .def("SetBackData", &Path::SetBackData)
+        .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
+                py::arg("closeIfNeeded")=true, py::arg("invert")=false);
+
 
     py::enum_<bool_op>(m, "bool_op")
         .value("bool_op_union", bool_op::bool_op_union)
