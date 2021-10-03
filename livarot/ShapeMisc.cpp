@@ -176,13 +176,14 @@ Shape::ConvertToForme (Path * dest)
   MakePointData (false);
   MakeEdgeData (false);
   MakeSweepDestData (false);
+  return;
 }
 
 // same as before, but each time we have a contour, try to reassemble the segments on it to make chunks of
 // the original(s) path(s)
 // originals are in the orig array, whose size is nbP
 void
-Shape::ConvertToForme (Path * dest, int nbP, Path * *orig, bool splitWhenForced)
+Shape::ConvertToForme (Path * dest, int nbP, std::vector<Path> * orig, bool splitWhenForced)
 {
   if (numberOfPoints() <= 1 || numberOfEdges() <= 1)
     return;
@@ -329,9 +330,10 @@ Shape::ConvertToForme (Path * dest, int nbP, Path * *orig, bool splitWhenForced)
   MakePointData (false);
   MakeEdgeData (false);
   MakeSweepDestData (false);
+  return;
 }
 void 
-Shape::ConvertToFormeNested (Path * dest, int nbP, Path * *orig, int /*wildPath*/,int &nbNest,int *&nesting,int *&contStart,bool splitWhenForced)
+Shape::ConvertToFormeNested (Path * dest, int nbP, std::vector<Path> * orig, int /*wildPath*/,int &nbNest,int *&nesting,int *&contStart,bool splitWhenForced)
 {
   nesting=nullptr;
   contStart=nullptr;
@@ -887,7 +889,7 @@ Shape::MakeOffset (Shape * a, double dec, JoinType join, double miter, bool do_p
 // polyline. since it was a DFS, the precParc and suivParc make a nice doubly-linked list of the edges in
 // the contour. the first and last edges of the contour are startBord and curBord
 void
-Shape::AddContour (Path * dest, int nbP, Path * *orig, int startBord, int curBord, bool splitWhenForced)
+Shape::AddContour (Path * dest, int nbP, std::vector<Path> * orig, int startBord, int curBord, bool splitWhenForced)
 {
   int bord = startBord;
   
@@ -900,7 +902,7 @@ Shape::AddContour (Path * dest, int nbP, Path * *orig, int startBord, int curBor
     int nPiece = ebData[bord].pieceID;
     int nPath = ebData[bord].pathID;
     
-    if (nPath < 0 || nPath >= nbP || orig[nPath] == nullptr)
+    if (nPath < 0 || nPath >= nbP || &(orig->at(nPath)) == nullptr)
     {
       // segment batard
       dest->LineTo (getPoint(getEdge(bord).en).x);
@@ -908,7 +910,7 @@ Shape::AddContour (Path * dest, int nbP, Path * *orig, int startBord, int curBor
     }
     else
     {
-      Path *from = orig[nPath];
+      Path *from = &(orig->at(nPath));
       if (nPiece < 0 || nPiece >= int(from->descr_cmd.size()))
 	    {
 	      // segment batard

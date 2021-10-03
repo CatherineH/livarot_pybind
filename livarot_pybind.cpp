@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <2geom/svg-path-parser.h>
 #include <2geom/svg-path-writer.h>
 #include <2geom/path-sink.h>
@@ -77,7 +78,9 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("ConvertToShape", &Shape::ConvertToShape, py::arg("a"), py::arg("directed") = fill_nonZero, py::arg("invert")=false)
         .def("getEdge", &Shape::getEdge)
         .def("Booleen", &Shape::Booleen, py::arg("a"), py::arg("b"), py::arg("mod"), py::arg("cutPathID") = -1 )
-		.def("ConvertToForme", py::overload_cast<Path *, int &, Path **, bool &>(&Shape::ConvertToForme), py::arg("dest"), py::arg("nbP"), py::arg("orig"), py::arg("splitWhenForced") = false);
+        .def("ConvertToForme", py::overload_cast<Path *>(&Shape::ConvertToForme))
+		//.def("ConvertToForme", [](Shape self, Path* dest, int& nbP, Path** orig, bool& splitWhenForced){self.ConvertToForme(dest, nbP, orig, splitWhenForced);});
+        .def("ConvertToForme", py::overload_cast<Path *, int, std::vector<Path> *, bool>(&Shape::ConvertToForme), py::arg("dest"), py::arg("nbP"), py::arg("orig"), py::arg("splitWhenForced") = false);
 
     py::class_<Path>(m, "Path")
         .def(py::init<>())

@@ -247,9 +247,9 @@ public:
     // version to use when conversion was done with ConvertWithBackData(): will attempt to merge segment belonging to 
     // the same curve
     // nota: apparently the function doesn't like very small segments of arc
-    void ConvertToForme(Path *dest, int nbP, Path **orig, bool splitWhenForced = false);
+    void ConvertToForme(Path *dest, int nbP, std::vector<Path> *orig, bool splitWhenForced = false);
     // version trying to recover the nesting of subpaths (ie: holes)
-    void ConvertToFormeNested(Path *dest, int nbP, Path **orig, int wildPath, int &nbNest,
+    void ConvertToFormeNested(Path *dest, int nbP, std::vector<Path> *orig, int wildPath, int &nbNest,
                               int *&nesting, int *&contStart, bool splitWhenForced = false);
   
     // sweeping a digraph to produce a intersection-free polygon
@@ -516,7 +516,7 @@ private:
     void DestroyEdge(int no, AlphaLigne *line);
     void AvanceEdge(int no, float to, AlphaLigne *line, bool exact, float step);
   
-    void AddContour(Path * dest, int nbP, Path **orig, int startBord,
+    void AddContour(Path * dest, int nbP, std::vector<Path> *orig, int startBord,
                    int curBord, bool splitWhenForced);
     int ReFormeLineTo(int bord, int curBord, Path *dest, Path *orig);
     int ReFormeArcTo(int bord, int curBord, Path *dest, Path *orig);

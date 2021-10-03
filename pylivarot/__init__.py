@@ -138,7 +138,7 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb):
     nbNest = 0
     conts = None
     nesting = None
-    nbOriginaux = None
+    nbOriginaux = 2
     # to compensate for the previous swap
     if bop == bool_op.bool_op_slice:
         res.Copy(originaux[0])
@@ -146,9 +146,9 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb):
     elif bop == bool_op.bool_op_cut: 
         # this function uses the point_data to get the winding number of each path (ie: is a hole or not)
         # for later reconstruction in objects, you also need to extract which path is parent of holes (nesting info)
-        theShape.ConvertToFormeNested(res, nbOriginaux, originaux[0], 1, nbNest, nesting, conts)
+        theShape.ConvertToFormeNested(res, nbOriginaux, originaux, 1, nbNest, nesting, conts)
     else:
-        theShape.ConvertToForme(res, nbOriginaux, originaux[0])
+        theShape.ConvertToForme(res, nbOriginaux, originaux)
 
     result_str = res.svg_dump_path()
     outres = py2geom.parse_svg_path(result_str)

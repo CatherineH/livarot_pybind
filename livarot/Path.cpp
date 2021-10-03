@@ -30,13 +30,6 @@ Path::Path()
 	back = false;
 }
 
-Path::~Path()
-{
-    for (auto & i : descr_cmd) {
-        delete i;
-    }
-}
-
 // debug function do dump the path contents on stdout
 void Path::Affiche()
 {
@@ -248,7 +241,7 @@ void Path::InsertArcTo(Geom::Point const &iPt, double iRx, double iRy, double an
 	return;
     }
   
-    descr_cmd.insert(descr_cmd.begin() + at, new PathDescrArcTo(iPt, iRx, iRy,
+    descr_cmd.insert(descr_cmd.begin() + at, new std::shared_ptr<PathDescrArcTo>(iPt, iRx, iRy,
                                                                 angle, iLargeArc, iClockwise));
 }
 
@@ -518,7 +511,7 @@ void Path::PointAt(int piece, double at, Geom::Point &pos)
 	return;
     }
     
-    PathDescr const *theD = descr_cmd[piece];
+    PathDescr const *theD = descr_cmd[piece].get();
     int const typ = theD->getType();
     Geom::Point tgt;
     double len;
@@ -562,7 +555,7 @@ void Path::PointAt(int piece, double at, Geom::Point &pos)
 	    return PointAt(piece - 1, 1.0, pos);
 	}
 	
-	PathDescrBezierTo *stB = dynamic_cast<PathDescrBezierTo *>(descr_cmd[bez_st]);
+	PathDescrBezierTo *stB = dynamic_cast<PathDescrBezierTo *>(descr_cmd[bez_st].get());
 	if ( piece > bez_st + stB->nb ) {
 	    // The spline goes past the authorized number of commands (bad).
 	    // [la spline sort du nombre de commandes autorisé (mauvais)]
@@ -572,24 +565,24 @@ void Path::PointAt(int piece, double at, Geom::Point &pos)
 	int k = piece - bez_st;
 	Geom::Point const bStPt = PrevPoint(bez_st - 1);
 	if (stB->nb == 1 || k <= 0) {
-	    PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 1]);
+	    PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 1].get());
 	    TangentOnBezAt(at, bStPt, *nData, *stB, false, pos, tgt, len, rad);
 	} else {
 	    // forcement plus grand que 1
 	    if (k == 1) {
-		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 1]);
-		PathDescrIntermBezierTo *nnextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 2]);
+		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 1].get());
+		PathDescrIntermBezierTo *nnextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 2].get());
 		PathDescrBezierTo fin(0.5 * (nextI->p + nnextI->p), 1);
 		TangentOnBezAt(at, bStPt, *nextI,  fin, false, pos, tgt, len, rad);
 	    } else if (k == stB->nb) {
-		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k]);
-		PathDescrIntermBezierTo *prevI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k - 1]);
+		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k].get());
+		PathDescrIntermBezierTo *prevI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k - 1].get());
 		Geom::Point stP = 0.5 * ( prevI->p + nextI->p );
 		TangentOnBezAt(at, stP, *nextI, *stB, false, pos, tgt, len, rad);
 	    } else {
-		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k]);
-		PathDescrIntermBezierTo *prevI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k - 1]);
-		PathDescrIntermBezierTo *nnextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k + 1]);
+		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k].get());
+		PathDescrIntermBezierTo *prevI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k - 1].get());
+		PathDescrIntermBezierTo *nnextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k + 1].get());
 		Geom::Point stP = 0.5 * ( prevI->p + nextI->p );
 		PathDescrBezierTo fin(0.5 * (nextI->p + nnextI->p), 1);
 		TangentOnBezAt(at, stP, *nextI, fin, false, pos, tgt, len, rad);
@@ -607,7 +600,7 @@ void Path::PointAndTangentAt(int piece, double at, Geom::Point &pos, Geom::Point
 	return;
     }
     
-    PathDescr const *theD = descr_cmd[piece];
+    PathDescr const *theD = descr_cmd[piece].get();
     int typ = theD->getType();
     double len;
     double rad;
@@ -622,7 +615,7 @@ void Path::PointAndTangentAt(int piece, double at, Geom::Point &pos, Geom::Point
 	    cp--;
 	}
 	if ( cp >= 0 ) {
-	    PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[cp]);
+	    PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[cp].get());
 	    PathDescrLineTo dst(nData->p);
 	    TangentOnSegAt(at, PrevPoint (piece - 1), dst, pos, tgt, len);
 	}
@@ -659,7 +652,7 @@ void Path::PointAndTangentAt(int piece, double at, Geom::Point &pos, Geom::Point
 	    // [pas trouvé le dubut de la spline (mauvais)]
 	}
 	
-	PathDescrBezierTo* stB = dynamic_cast<PathDescrBezierTo*>(descr_cmd[bez_st]);
+	PathDescrBezierTo* stB = dynamic_cast<PathDescrBezierTo*>(descr_cmd[bez_st].get());
 	if ( piece > bez_st + stB->nb ) {
 	    return PointAndTangentAt(piece - 1, 1.0, pos, tgt);
 	    // The spline goes past the number of authorized commands (bad).
@@ -669,24 +662,24 @@ void Path::PointAndTangentAt(int piece, double at, Geom::Point &pos, Geom::Point
 	int k = piece - bez_st;
 	Geom::Point const bStPt(PrevPoint( bez_st - 1 ));
 	if (stB->nb == 1 || k <= 0) {
-	    PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 1]);
+	    PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 1].get());
 	    TangentOnBezAt (at, bStPt, *nData, *stB, false, pos, tgt, len, rad);
 	} else {
 	    // forcement plus grand que 1
 	    if (k == 1) {
-		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 1]);
-		PathDescrIntermBezierTo *nnextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 2]);
+		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 1].get());
+		PathDescrIntermBezierTo *nnextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + 2].get());
 		PathDescrBezierTo fin(0.5 * (nextI->p + nnextI->p), 1);
 		TangentOnBezAt(at, bStPt, *nextI, fin, false, pos, tgt, len, rad);
 	    } else if (k == stB->nb) {
-		PathDescrIntermBezierTo *prevI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k - 1]);
-		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k]);
+		PathDescrIntermBezierTo *prevI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k - 1].get());
+		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k].get());
 		Geom::Point stP = 0.5 * ( prevI->p + nextI->p );
 		TangentOnBezAt(at, stP, *nextI, *stB, false, pos, tgt, len, rad);
 	    } else {
-		PathDescrIntermBezierTo *prevI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k - 1]);
-		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k]);
-		PathDescrIntermBezierTo *nnextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k + 1]);
+		PathDescrIntermBezierTo *prevI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k - 1].get());
+		PathDescrIntermBezierTo *nextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k].get());
+		PathDescrIntermBezierTo *nnextI = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[bez_st + k + 1].get());
 		Geom::Point stP = 0.5 * ( prevI->p + nextI->p );
 		PathDescrBezierTo fin(0.5 * (nnextI->p + nnextI->p), 1);
 		TangentOnBezAt(at, stP, *nextI, fin, false, pos, tgt, len, rad);
@@ -713,7 +706,7 @@ void Path::FastBBox(double &l,double &t,double &r,double &b)
 	switch ( typ ) {
 	case descr_lineto:
 	{
-	    PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(i);
+	    PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(i.get());
 	    if ( empty ) {
 		l = r = nData->p[Geom::X];
 		t = b = nData->p[Geom::Y];
@@ -738,7 +731,7 @@ void Path::FastBBox(double &l,double &t,double &r,double &b)
 	
 	case descr_moveto:
 	{
-	    PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(i);
+	    PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(i.get());
 	    if ( empty ) {
 		l = r = nData->p[Geom::X];
 		t = b = nData->p[Geom::Y];
@@ -763,7 +756,7 @@ void Path::FastBBox(double &l,double &t,double &r,double &b)
 	
 	case descr_arcto:
 	{
-	    PathDescrArcTo *nData  =  dynamic_cast<PathDescrArcTo *>(i);
+	    PathDescrArcTo *nData  =  dynamic_cast<PathDescrArcTo *>(i.get());
 	    if ( empty ) {
 		l = r = nData->p[Geom::X];
 		t = b = nData->p[Geom::Y];
@@ -788,7 +781,7 @@ void Path::FastBBox(double &l,double &t,double &r,double &b)
 	
 	case descr_cubicto:
 	{
-	    PathDescrCubicTo *nData  =  dynamic_cast<PathDescrCubicTo *>(i);
+	    PathDescrCubicTo *nData  =  dynamic_cast<PathDescrCubicTo *>(i.get());
 	    if ( empty ) {
 		l = r = nData->p[Geom::X];
 		t = b = nData->p[Geom::Y];
@@ -851,7 +844,7 @@ bezier-paths used by True-Type fonts."
 	
 	case descr_bezierto:
 	{
-	    PathDescrBezierTo *nData  =  dynamic_cast<PathDescrBezierTo *>(i);
+	    PathDescrBezierTo *nData  =  dynamic_cast<PathDescrBezierTo *>(i.get());
 	    if ( empty ) {
 		l = r = nData->p[Geom::X];
 		t = b = nData->p[Geom::Y];
@@ -876,7 +869,7 @@ bezier-paths used by True-Type fonts."
 	
 	case descr_interm_bezier:
 	{
-	    PathDescrIntermBezierTo *nData  =  dynamic_cast<PathDescrIntermBezierTo *>(i);
+	    PathDescrIntermBezierTo *nData  =  dynamic_cast<PathDescrIntermBezierTo *>(i.get());
 	    if ( empty ) {
 		l = r = nData->p[Geom::X];
 		t = b = nData->p[Geom::Y];
@@ -920,7 +913,7 @@ bool Path::IsLineSegment(int piece)
         return false;
     }
     
-    PathDescr const *theD = descr_cmd[piece];
+    PathDescr const *theD = descr_cmd[piece].get();
     int const typ = theD->getType();
     
     return (typ == descr_lineto);

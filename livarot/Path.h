@@ -19,6 +19,7 @@
 #define my_path
 
 #include <vector>
+#include <memory>
 #include "LivarotDefs.h"
 #include <2geom/point.h>
 
@@ -80,7 +81,7 @@ public:
   int         pending_moveto_cmd;
   int         pending_moveto_data;
   // the path description
-  std::vector<PathDescr*> descr_cmd;
+  std::vector<std::shared_ptr<PathDescr>> descr_cmd;
 
   // polyline storage: a series of coordinates (and maybe weights)
   // also back data: info on where this polyline's segment comes from, ie which command in the path description: "piece"
