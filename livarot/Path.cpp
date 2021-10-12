@@ -45,7 +45,7 @@ void Path::Affiche()
 void Path::Reset()
 {
     for (auto & i : descr_cmd) {
-        delete i;
+        delete i.get();
     }
     
     descr_cmd.clear();
@@ -59,14 +59,14 @@ void Path::Copy(Path * who)
     ResetPoints();
     
     for (auto & i : descr_cmd) {
-        delete i;
+        delete i.get();
     }
         
     descr_cmd.clear();
         
     for (auto i : who->descr_cmd)
     {
-        descr_cmd.push_back(i->clone());
+        descr_cmd.push_back(std::shared_ptr<PathDescr>(i->clone()));
     }
 }
 
@@ -90,7 +90,7 @@ int Path::ForcePoint()
         return -1;
     }
 
-    descr_cmd.push_back(new PathDescrForced);
+    descr_cmd.push_back(std::shared_ptr<PathDescrForced>(new PathDescrForced));
     return descr_cmd.size() - 1;
 }
 
@@ -106,7 +106,7 @@ void Path::InsertForcePoint(int at)
 	return;
     }
     
-    descr_cmd.insert(descr_cmd.begin() + at, new PathDescrForced);
+    descr_cmd.insert(descr_cmd.begin() + at, std::shared_ptr<PathDescrForced>(new PathDescrForced));
 }
 
 int Path::Close()
@@ -121,7 +121,7 @@ int Path::Close()
         return -1;
     }
 
-    descr_cmd.push_back(new PathDescrClose);
+    descr_cmd.push_back(std::shared_ptr<PathDescrClose>(new PathDescrClose));
     
     descr_flags &= ~(descr_doing_subpath);
     pending_moveto_cmd = -1;
@@ -139,7 +139,7 @@ int Path::MoveTo(Geom::Point const &iPt)
     }
     pending_moveto_cmd = descr_cmd.size();
     
-    descr_cmd.push_back(new PathDescrMoveTo(iPt));
+    descr_cmd.push_back(std::shared_ptr<PathDescrMoveTo>(new PathDescrMoveTo(iPt)));
 
     descr_flags |= descr_doing_subpath;
     return descr_cmd.size() - 1;
@@ -156,7 +156,7 @@ void Path::InsertMoveTo(Geom::Point const &iPt, int at)
         return;
     }
 
-  descr_cmd.insert(descr_cmd.begin() + at, new PathDescrMoveTo(iPt));
+  descr_cmd.insert(descr_cmd.begin() + at, std::shared_ptr<PathDescrMoveTo>(new PathDescrMoveTo(iPt)));
 }
 
 int Path::LineTo(Geom::Point const &iPt)
@@ -168,7 +168,7 @@ int Path::LineTo(Geom::Point const &iPt)
 	return MoveTo (iPt);
     }
     
-    descr_cmd.push_back(new PathDescrLineTo(iPt));
+    descr_cmd.push_back(std::shared_ptr<PathDescrLineTo>(new PathDescrLineTo(iPt)));
     return descr_cmd.size() - 1;
 }
 
@@ -183,7 +183,7 @@ void Path::InsertLineTo(Geom::Point const &iPt, int at)
         return;
     }
     
-    descr_cmd.insert(descr_cmd.begin() + at, new PathDescrLineTo(iPt));
+    descr_cmd.insert(descr_cmd.begin() + at, std::shared_ptr<PathDescrLineTo>(new PathDescrLineTo(iPt)));
 }
 
 int Path::CubicTo(Geom::Point const &iPt, Geom::Point const &iStD, Geom::Point const &iEnD)
@@ -195,7 +195,7 @@ int Path::CubicTo(Geom::Point const &iPt, Geom::Point const &iStD, Geom::Point c
 	return MoveTo (iPt);
     }
 
-    descr_cmd.push_back(new PathDescrCubicTo(iPt, iStD, iEnD));
+    descr_cmd.push_back(std::shared_ptr<PathDescrCubicTo>(new PathDescrCubicTo(iPt, iStD, iEnD)));
     return descr_cmd.size() - 1;
 }
 
@@ -211,7 +211,7 @@ void Path::InsertCubicTo(Geom::Point const &iPt, Geom::Point const &iStD, Geom::
 	return;
     }
   
-    descr_cmd.insert(descr_cmd.begin() + at, new PathDescrCubicTo(iPt, iStD, iEnD));
+    descr_cmd.insert(descr_cmd.begin() + at, std::shared_ptr<PathDescrCubicTo>(new PathDescrCubicTo(iPt, iStD, iEnD)));
 }
 
 int Path::ArcTo(Geom::Point const &iPt, double iRx, double iRy, double angle,
@@ -224,7 +224,7 @@ int Path::ArcTo(Geom::Point const &iPt, double iRx, double iRy, double angle,
 	return MoveTo(iPt);
     }
 
-    descr_cmd.push_back(new PathDescrArcTo(iPt, iRx, iRy, angle, iLargeArc, iClockwise));
+    descr_cmd.push_back(std::shared_ptr<PathDescrArcTo>(new PathDescrArcTo(iPt, iRx, iRy, angle, iLargeArc, iClockwise)));
     return descr_cmd.size() - 1;
 }
 
@@ -241,8 +241,8 @@ void Path::InsertArcTo(Geom::Point const &iPt, double iRx, double iRy, double an
 	return;
     }
   
-    descr_cmd.insert(descr_cmd.begin() + at, new std::shared_ptr<PathDescrArcTo>(iPt, iRx, iRy,
-                                                                angle, iLargeArc, iClockwise));
+    descr_cmd.insert(descr_cmd.begin() + at, std::shared_ptr<PathDescrArcTo>(new PathDescrArcTo(iPt, iRx, iRy,
+                                                                angle, iLargeArc, iClockwise)));
 }
 
 int Path::TempBezierTo()
@@ -256,7 +256,7 @@ int Path::TempBezierTo()
     }
     pending_bezier_cmd = descr_cmd.size();
     
-    descr_cmd.push_back(new PathDescrBezierTo(Geom::Point(0, 0), 0));
+    descr_cmd.push_back( std::shared_ptr<PathDescrBezierTo>(new PathDescrBezierTo(Geom::Point(0, 0), 0)));
     descr_flags |= descr_adding_bezier;
     descr_flags |= descr_delayed_bezier;
     return descr_cmd.size() - 1;
@@ -298,7 +298,7 @@ int Path::EndBezierTo(Geom::Point const &iPt)
     if ( (descr_flags & descr_delayed_bezier) == 0 ) {
 	return EndBezierTo();
     }
-    PathDescrBezierTo *nData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[pending_bezier_cmd]);
+    PathDescrBezierTo *nData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[pending_bezier_cmd].get());
     nData->p = iPt;
     pending_bezier_cmd = -1;
     descr_flags &= ~(descr_adding_bezier);
@@ -317,9 +317,9 @@ int Path::IntermBezierTo(Geom::Point const &iPt)
 	return MoveTo (iPt);
     }
 
-    descr_cmd.push_back(new PathDescrIntermBezierTo(iPt));
+    descr_cmd.push_back(std::make_shared<PathDescrIntermBezierTo>(iPt));
 
-    PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[pending_bezier_cmd]);
+    PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[pending_bezier_cmd].get());
     nBData->nb++;
     return descr_cmd.size() - 1;
 }
@@ -336,7 +336,7 @@ void Path::InsertIntermBezierTo(Geom::Point const &iPt, int at)
         return;
     }
     
-    descr_cmd.insert(descr_cmd.begin() + at, new PathDescrIntermBezierTo(iPt));
+    descr_cmd.insert(descr_cmd.begin() + at, std::make_shared<PathDescrIntermBezierTo>(iPt));
 }
 
 
@@ -352,7 +352,7 @@ int Path::BezierTo(Geom::Point const &iPt)
     
     pending_bezier_cmd = descr_cmd.size();
     
-    descr_cmd.push_back(new PathDescrBezierTo(iPt, 0));
+    descr_cmd.push_back(std::make_shared<PathDescrBezierTo>(iPt, 0));
     descr_flags |= descr_adding_bezier;
     descr_flags &= ~(descr_delayed_bezier);
     return descr_cmd.size() - 1;
@@ -370,7 +370,7 @@ void Path::InsertBezierTo(Geom::Point const &iPt, int iNb, int at)
 	return;
     }
   
-    descr_cmd.insert(descr_cmd.begin() + at, new PathDescrBezierTo(iPt, iNb));
+    descr_cmd.insert(descr_cmd.begin() + at, std::make_shared<PathDescrBezierTo>(iPt, iNb));
 }
 
 

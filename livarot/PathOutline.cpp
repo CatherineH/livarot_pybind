@@ -101,7 +101,7 @@ void Path::Outline(Path *dest, double width, JoinType join, ButtType butt, doubl
                         curX = nextX;
                         curD--;
                     } else if (typ == descr_cubicto) {
-                        PathDescrCubicTo* nData = dynamic_cast<PathDescrCubicTo*>(descr_cmd[curD]);
+                        PathDescrCubicTo* nData = dynamic_cast<PathDescrCubicTo*>(descr_cmd[curD].get());
                         nextX = PrevPoint (curD - 1);
                         Geom::Point  isD=-nData->start;
                         Geom::Point  ieD=-nData->end;
@@ -109,7 +109,7 @@ void Path::Outline(Path *dest, double width, JoinType join, ButtType butt, doubl
                         curX = nextX;
                         curD--;
                     } else if (typ == descr_arcto) {
-                        PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo*>(descr_cmd[curD]);
+                        PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo*>(descr_cmd[curD].get());
                         nextX = PrevPoint (curD - 1);
                         rev->ArcTo (nextX, nData->rx,nData->ry,nData->angle,nData->large,nData->clockwise);
                         curX = nextX;
@@ -132,7 +132,7 @@ void Path::Outline(Path *dest, double width, JoinType join, ButtType butt, doubl
                             nextX = PrevPoint (nD - 1);
                             rev->BezierTo (nextX);
                             for (int i = curD; i > nD; i--) {
-                                PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[i]);
+                                PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[i].get());
                                 rev->IntermBezierTo (nData->p);
                             }
                             rev->EndBezierTo ();
@@ -283,7 +283,7 @@ Path::InsideOutline (Path * dest, double width, JoinType join, ButtType butt,
 						curX = nextX;
 						curD--;
 					}  else if (typ == descr_cubicto) {
-                                            PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo*>(descr_cmd[curD]);
+                                            PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo*>(descr_cmd[curD].get());
 						nextX = PrevPoint (curD - 1);
 						Geom::Point  isD=-nData->start;
 						Geom::Point  ieD=-nData->end;
@@ -291,7 +291,7 @@ Path::InsideOutline (Path * dest, double width, JoinType join, ButtType butt,
 						curX = nextX;
 						curD--;
 					} else if (typ == descr_arcto) {
-                                            PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo*>(descr_cmd[curD]);
+                                            PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo*>(descr_cmd[curD].get());
 						nextX = PrevPoint (curD - 1);
 						rev->ArcTo (nextX, nData->rx,nData->ry,nData->angle,nData->large,nData->clockwise);
 						curX = nextX;
@@ -313,7 +313,7 @@ Path::InsideOutline (Path * dest, double width, JoinType join, ButtType butt,
 							nextX = PrevPoint (nD - 1);
 							rev->BezierTo (nextX);
 							for (int i = curD; i > nD; i--) {
-                                                            PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[i]);
+                                                            PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[i].get());
 								rev->IntermBezierTo (nData->p);
 							}
 							rev->EndBezierTo ();
@@ -362,7 +362,7 @@ void Path::SubContractOutline(int off, int num_pd,
             curX[0] = curX[1] = 0;
             curP = 0;
         } else {
-            PathDescrMoveTo* nData = dynamic_cast<PathDescrMoveTo*>(descr_cmd[off]);
+            PathDescrMoveTo* nData = dynamic_cast<PathDescrMoveTo*>(descr_cmd[off].get());
             curX = nData->p;
         }
     }
@@ -383,7 +383,7 @@ void Path::SubContractOutline(int off, int num_pd,
 		if (nType == descr_forced)  {
 			curP++;
 		} else if (nType == descr_moveto) {
-			PathDescrMoveTo* nData = dynamic_cast<PathDescrMoveTo*>(descr_cmd[curD]);
+			PathDescrMoveTo* nData = dynamic_cast<PathDescrMoveTo*>(descr_cmd[curD].get());
 			nextX = nData->p;
 			// et on avance
 			if (doFirst) {
@@ -467,7 +467,7 @@ void Path::SubContractOutline(int off, int num_pd,
 		}
 		else if (nType == descr_lineto)
 		{
-			PathDescrLineTo* nData = dynamic_cast<PathDescrLineTo*>(descr_cmd[curD]);
+			PathDescrLineTo* nData = dynamic_cast<PathDescrLineTo*>(descr_cmd[curD].get());
 			nextX = nData->p;
 			// et on avance
 			TangentOnSegAt (0.0, curX, *nData, stPos, stTgt, stTle);
@@ -520,7 +520,7 @@ void Path::SubContractOutline(int off, int num_pd,
 		}
 		else if (nType == descr_cubicto)
 		{
-			PathDescrCubicTo* nData = dynamic_cast<PathDescrCubicTo*>(descr_cmd[curD]);
+			PathDescrCubicTo* nData = dynamic_cast<PathDescrCubicTo*>(descr_cmd[curD].get());
 			nextX = nData->p;
 			// test de nullite du segment
 			if (IsNulCurve (descr_cmd, curD, curX))
@@ -576,7 +576,7 @@ void Path::SubContractOutline(int off, int num_pd,
 		}
 		else if (nType == descr_arcto)
 		{
-			PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo*>(descr_cmd[curD]);
+			PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo*>(descr_cmd[curD].get());
 			nextX = nData->p;
 			// test de nullité du segment
 			if (IsNulCurve (descr_cmd, curD, curX))
@@ -633,7 +633,7 @@ void Path::SubContractOutline(int off, int num_pd,
 		}
 		else if (nType == descr_bezierto)
 		{
-			PathDescrBezierTo* nBData = dynamic_cast<PathDescrBezierTo*>(descr_cmd[curD]);
+			PathDescrBezierTo* nBData = dynamic_cast<PathDescrBezierTo*>(descr_cmd[curD].get());
 			int nbInterm = nBData->nb;
 			nextX = nBData->p;
 
@@ -646,7 +646,7 @@ void Path::SubContractOutline(int off, int num_pd,
 
 			curD = off + curP;
                         int ip = curD;
-			PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[ip]);
+			PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[ip].get());
 
 			if (nbInterm <= 0) {
 				// et on avance
@@ -724,7 +724,7 @@ void Path::SubContractOutline(int off, int num_pd,
 				stNor=stTgt.cw();
 
 				ip++;
-				nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[ip]);
+				nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[ip].get());
 				// et on avance
 				if (stTle > 0) {
 					if (doFirst) {
@@ -750,7 +750,7 @@ void Path::SubContractOutline(int off, int num_pd,
 
 					dx = nData->p;
                                         ip++;
-					nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[ip]);
+					nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[ip].get());
 					Geom::Point stx = (bx + cx) / 2;
 					//                                      double  stw=(bw+cw)/2;
 
@@ -829,12 +829,12 @@ void Path::SubContractOutline(int off, int num_pd,
 
 // like the name says: check whether the path command is actually more than a dumb point.
 bool
-Path::IsNulCurve (std::vector<PathDescr*> const &cmd, int curD, Geom::Point const &curX)
+Path::IsNulCurve (std::vector<std::shared_ptr<PathDescr>> const &cmd, int curD, Geom::Point const &curX)
 {
 	switch(cmd[curD]->getType()) {
     case descr_lineto:
     {
-		PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo*>(cmd[curD]);
+		PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo*>(cmd[curD].get());
 		if (Geom::LInfty(nData->p - curX) < 0.00001) {
 			return true;
 		}
@@ -842,7 +842,7 @@ Path::IsNulCurve (std::vector<PathDescr*> const &cmd, int curD, Geom::Point cons
     }
 	case descr_cubicto:
     {
-		PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo*>(cmd[curD]);
+		PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo*>(cmd[curD].get());
 		Geom::Point A = nData->start + nData->end + 2*(curX - nData->p);
 		Geom::Point B = 3*(nData->p - curX) - 2*nData->start - nData->end;
 		Geom::Point C = nData->start;
@@ -855,7 +855,7 @@ Path::IsNulCurve (std::vector<PathDescr*> const &cmd, int curD, Geom::Point cons
     }
     case descr_arcto:
     {
-		PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo*>(cmd[curD]);
+		PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo*>(cmd[curD].get());
 		if ( Geom::LInfty(nData->p - curX) < 0.00001) {
 			if ((! nData->large)
 				|| (fabs (nData->rx) < 0.00001
@@ -867,7 +867,7 @@ Path::IsNulCurve (std::vector<PathDescr*> const &cmd, int curD, Geom::Point cons
     }
     case descr_bezierto:
     {
-		PathDescrBezierTo* nBData = dynamic_cast<PathDescrBezierTo*>(cmd[curD]);
+		PathDescrBezierTo* nBData = dynamic_cast<PathDescrBezierTo*>(cmd[curD].get());
 		if (nBData->nb <= 0)
 		{
 			if (Geom::LInfty(nBData->p - curX) < 0.00001) {
@@ -879,7 +879,7 @@ Path::IsNulCurve (std::vector<PathDescr*> const &cmd, int curD, Geom::Point cons
 		{
 			if (Geom::LInfty(nBData->p - curX) < 0.00001) {
 				int ip = curD + 1;
-				PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(cmd[ip]);
+				PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(cmd[ip].get());
 				if (Geom::LInfty(nData->p - curX) < 0.00001) {
 					return true;
 				}
@@ -888,7 +888,7 @@ Path::IsNulCurve (std::vector<PathDescr*> const &cmd, int curD, Geom::Point cons
 		} else if (Geom::LInfty(nBData->p - curX) < 0.00001) {
 			for (int i = 1; i <= nBData->nb; i++) {
 				int ip = curD + i;
-				PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(cmd[ip]);
+				PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(cmd[ip].get());
 				if (Geom::LInfty(nData->p - curX) > 0.00001) {
 					return false;
 				}
@@ -1199,7 +1199,7 @@ Path::OutlineJoin (Path * dest, Geom::Point pos, Geom::Point stNor, Geom::Point 
                 double c2 = Geom::dot (biss, enNor);
                 if (fabs(c2) > M_SQRT1_2) {    // apply only to obtuse angles
                     double l = width / c2;
-                    PathDescrLineTo* nLine = dynamic_cast<PathDescrLineTo*>(dest->descr_cmd[dest->descr_cmd.size() - 1]);
+                    PathDescrLineTo* nLine = dynamic_cast<PathDescrLineTo*>(dest->descr_cmd[dest->descr_cmd.size() - 1].get());
                     nLine->p = pos + l*biss;  // relocate to bisector
                 } else {
                     dest->LineTo (pos + width*enNor);
@@ -1260,7 +1260,7 @@ Path::OutlineJoin (Path * dest, Geom::Point pos, Geom::Point stNor, Geom::Point 
                     dest->LineTo (pos + width*enNor);
                 } else {
                     if (dest->descr_cmd[dest->descr_cmd.size() - 1]->getType() == descr_lineto) {
-                        PathDescrLineTo* nLine = dynamic_cast<PathDescrLineTo*>(dest->descr_cmd[dest->descr_cmd.size() - 1]);
+                        PathDescrLineTo* nLine = dynamic_cast<PathDescrLineTo*>(dest->descr_cmd[dest->descr_cmd.size() - 1].get());
                         nLine->p = pos+l*biss; // relocate to bisector
                     } else {
                         dest->LineTo (pos+l*biss);

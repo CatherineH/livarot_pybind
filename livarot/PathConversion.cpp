@@ -46,7 +46,7 @@ void Path::ConvertWithBackData(double treshhold)
     {
         int const firstTyp = descr_cmd[0]->getType();
         if ( firstTyp == descr_moveto ) {
-            curX = dynamic_cast<PathDescrMoveTo *>(descr_cmd[0])->p;
+            curX = dynamic_cast<PathDescrMoveTo *>(descr_cmd[0].get())->p;
         } else {
             curP = 0;
             curX[Geom::X] = curX[Geom::Y] = 0;
@@ -68,7 +68,7 @@ void Path::ConvertWithBackData(double treshhold)
             }
 
             case descr_moveto: {
-                PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo*>(descr_cmd[curP]);
+                PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo*>(descr_cmd[curP].get());
                 nextX = nData->p;
                 lastMoveTo = AddPoint(nextX, curP, 0.0, true);
                 // et on avance
@@ -85,7 +85,7 @@ void Path::ConvertWithBackData(double treshhold)
             }
 
             case descr_lineto: {
-                PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[curP]);
+                PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 AddPoint(nextX,curP,1.0,false);
                 // et on avance
@@ -94,7 +94,7 @@ void Path::ConvertWithBackData(double treshhold)
             }
 
             case descr_cubicto: {
-                PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[curP]);
+                PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 RecCubicTo(curX, nData->start, nextX, nData->end, treshhold, 8, 0.0, 1.0, curP);
                 AddPoint(nextX, curP, 1.0, false);
@@ -104,7 +104,7 @@ void Path::ConvertWithBackData(double treshhold)
             }
 
             case descr_arcto: {
-                PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[curP]);
+                PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 DoArc(curX, nextX, nData->rx, nData->ry, nData->angle, nData->large, nData->clockwise, treshhold, curP);
                 AddPoint(nextX, curP, 1.0, false);
@@ -114,12 +114,12 @@ void Path::ConvertWithBackData(double treshhold)
             }
 
             case descr_bezierto: {
-                PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[curP]);
+                PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[curP].get());
                 int nbInterm = nBData->nb;
                 nextX = nBData->p;
 
                 int ip = curP + 1;
-                PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                 if ( nbInterm >= 1 ) {
                     Geom::Point bx = curX;
@@ -127,7 +127,7 @@ void Path::ConvertWithBackData(double treshhold)
                     Geom::Point cx = 2 * bx - dx;
 
                     ip++;
-                    nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                    nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                     for (int k = 0; k < nbInterm - 1; k++) {
                         bx = cx;
@@ -135,7 +135,7 @@ void Path::ConvertWithBackData(double treshhold)
 
                         dx = nData->p;
                         ip++;
-                        nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                        nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                         Geom::Point stx;
                         stx = (bx + cx) / 2;
@@ -209,7 +209,7 @@ void Path::Convert(double treshhold)
     {
         int const firstTyp = descr_cmd[0]->getType();
         if ( firstTyp == descr_moveto ) {
-            curX = dynamic_cast<PathDescrMoveTo *>(descr_cmd[0])->p;
+            curX = dynamic_cast<PathDescrMoveTo *>(descr_cmd[0].get())->p;
         } else {
             curP = 0;
             curX[0] = curX[1] = 0;
@@ -232,7 +232,7 @@ void Path::Convert(double treshhold)
             }
 
             case descr_moveto: {
-                PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[curP]);
+                PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 lastMoveTo = AddPoint(nextX, true);
                 descr_cmd[curP]->associated = lastMoveTo;
@@ -260,7 +260,7 @@ void Path::Convert(double treshhold)
             }
 
             case descr_lineto: {
-                PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[curP]);
+                PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 descr_cmd[curP]->associated = AddPoint(nextX, false);
                 if ( descr_cmd[curP]->associated < 0 ) {
@@ -276,7 +276,7 @@ void Path::Convert(double treshhold)
             }
 
             case descr_cubicto: {
-                PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[curP]);
+                PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 RecCubicTo(curX, nData->start, nextX, nData->end, treshhold, 8);
                 descr_cmd[curP]->associated = AddPoint(nextX,false);
@@ -293,7 +293,7 @@ void Path::Convert(double treshhold)
             }
 
             case descr_arcto: {
-                PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[curP]);
+                PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 DoArc(curX, nextX, nData->rx, nData->ry, nData->angle, nData->large, nData->clockwise, treshhold);
                 descr_cmd[curP]->associated = AddPoint(nextX, false);
@@ -310,14 +310,14 @@ void Path::Convert(double treshhold)
             }
 
             case descr_bezierto: {
-                PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[curP]);
+                PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[curP].get());
                 int nbInterm = nBData->nb;
                 nextX = nBData->p;
                 int curBD = curP;
 
                 curP++;
                 int ip = curP;
-                PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                 if ( nbInterm == 1 ) {
                     Geom::Point const midX = nData->p;
@@ -328,7 +328,7 @@ void Path::Convert(double treshhold)
                     Geom::Point cx = 2 * bx - dx;
 
                     ip++;
-                    nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                    nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                     for (int k = 0; k < nbInterm - 1; k++) {
                         bx = cx;
@@ -336,7 +336,7 @@ void Path::Convert(double treshhold)
 
                         dx = nData->p;
                         ip++;
-                        nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                        nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                         Geom::Point stx = (bx + cx) / 2;
                         if ( k > 0 ) {
@@ -424,7 +424,7 @@ void Path::ConvertEvenLines(double treshhold)
     {
         int const firstTyp = descr_cmd[0]->getType();
         if ( firstTyp == descr_moveto ) {
-            curX = dynamic_cast<PathDescrMoveTo *>(descr_cmd[0])->p;
+            curX = dynamic_cast<PathDescrMoveTo *>(descr_cmd[0].get())->p;
         } else {
             curP = 0;
             curX[0] = curX[1] = 0;
@@ -447,7 +447,7 @@ void Path::ConvertEvenLines(double treshhold)
             }
 
             case descr_moveto: {
-                PathDescrMoveTo* nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[curP]);
+                PathDescrMoveTo* nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 lastMoveTo = AddPoint(nextX,true);
                 descr_cmd[curP]->associated = lastMoveTo;
@@ -489,7 +489,7 @@ void Path::ConvertEvenLines(double treshhold)
             }
 
             case descr_lineto: {
-                PathDescrLineTo* nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[curP]);
+                PathDescrLineTo* nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 Geom::Point nexcur = nextX - curX;
                 const double segL = L2(nexcur);
@@ -514,7 +514,7 @@ void Path::ConvertEvenLines(double treshhold)
             }
 
             case descr_cubicto: {
-                PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[curP]);
+                PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 RecCubicTo(curX, nData->start, nextX, nData->end, treshhold, 8, 4 * treshhold);
                 descr_cmd[curP]->associated = AddPoint(nextX, false);
@@ -531,7 +531,7 @@ void Path::ConvertEvenLines(double treshhold)
             }
 
             case descr_arcto: {
-                PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[curP]);
+                PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[curP].get());
                 nextX = nData->p;
                 DoArc(curX, nextX, nData->rx, nData->ry, nData->angle, nData->large, nData->clockwise, treshhold);
                 descr_cmd[curP]->associated =AddPoint(nextX, false);
@@ -549,14 +549,14 @@ void Path::ConvertEvenLines(double treshhold)
             }
 
             case descr_bezierto: {
-                PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[curP]);
+                PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[curP].get());
                 int nbInterm = nBData->nb;
                 nextX = nBData->p;
                 int curBD = curP;
 
                 curP++;
                 int ip = curP;
-                PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                 if ( nbInterm == 1 ) {
                     Geom::Point const midX = nData->p;
@@ -567,7 +567,7 @@ void Path::ConvertEvenLines(double treshhold)
                     Geom::Point cx = 2 * bx - dx;
 
                     ip++;
-                    nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                    nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                     for (int k = 0; k < nbInterm - 1; k++) {
                         bx = cx;
@@ -575,7 +575,7 @@ void Path::ConvertEvenLines(double treshhold)
                         dx = nData->p;
 
                         ip++;
-                        nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip]);
+                        nData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[ip].get());
 
                         Geom::Point stx = (bx+cx) / 2;
                         if ( k > 0 ) {
@@ -647,23 +647,23 @@ const Geom::Point Path::PrevPoint(int i) const
     g_assert( i >= 0 );
     switch ( descr_cmd[i]->getType() ) {
         case descr_moveto: {
-            PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[i]);
+            PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[i].get());
             return nData->p;
         }
         case descr_lineto: {
-            PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[i]);
+            PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[i].get());
             return nData->p;
         }
         case descr_arcto: {
-            PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[i]);
+            PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[i].get());
             return nData->p;
         }
         case descr_cubicto: {
-            PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[i]);
+            PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[i].get());
             return nData->p;
         }
         case descr_bezierto: {
-            PathDescrBezierTo *nData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[i]);
+            PathDescrBezierTo *nData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[i].get());
             return nData->p;
         }
         case descr_interm_bezier:

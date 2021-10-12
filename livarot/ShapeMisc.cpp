@@ -942,7 +942,7 @@ Shape::AddContour (Path * dest, int nbP, std::vector<Path> * orig, int startBord
 	      else if (nType == descr_bezierto)
         {
           PathDescrBezierTo* nBData =
-	    dynamic_cast<PathDescrBezierTo *>(from->descr_cmd[nPiece]);
+	    dynamic_cast<PathDescrBezierTo *>(from->descr_cmd[nPiece].get());
 	  
           if (nBData->nb == 0)
           {
@@ -1061,7 +1061,7 @@ Shape::ReFormeArcTo (int bord, int /*curBord*/, Path * dest, Path * from)
     bord = swdData[bord].suivParc;
   }
   double sang, eang;
-  PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo *>(from->descr_cmd[nPiece]);
+  PathDescrArcTo* nData = dynamic_cast<PathDescrArcTo *>(from->descr_cmd[nPiece].get());
   bool nLarge = nData->large;
   bool nClockwise = nData->clockwise;
   Path::ArcAngles (from->PrevPoint (nPiece - 1), nData->p,nData->rx,nData->ry,nData->angle*M_PI/180.0, nLarge, nClockwise,  sang, eang);
@@ -1101,7 +1101,7 @@ Shape::ReFormeArcTo (int bord, int /*curBord*/, Path * dest, Path * from)
 		}
 	}*/
   {
-    PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(from->descr_cmd[nPiece]);
+    PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(from->descr_cmd[nPiece].get());
     dest->ArcTo (nx, nData->rx,nData->ry,nData->angle, nLarge, nClockwise);
   }
   return bord;
@@ -1141,7 +1141,7 @@ Shape::ReFormeCubicTo (int bord, int /*curBord*/, Path * dest, Path * from)
   
   Geom::Point sDx, eDx;
   {
-    PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(from->descr_cmd[nPiece]);
+    PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(from->descr_cmd[nPiece].get());
     Path::CubicTangent (ts, sDx, prevx,nData->start,nData->p,nData->end);
     Path::CubicTangent (te, eDx, prevx,nData->start,nData->p,nData->end);
   }
@@ -1168,7 +1168,7 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
   PathDescrBezierTo *nBData = nullptr;
   if (typ == descr_bezierto)
   {
-    nBData = dynamic_cast<PathDescrBezierTo *>(from->descr_cmd[nPiece]);
+    nBData = dynamic_cast<PathDescrBezierTo *>(from->descr_cmd[nPiece].get());
     inBezier = nPiece;
     nbInterm = nBData->nb;
   }
@@ -1181,7 +1181,7 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
       if (typ == descr_bezierto)
       {
         inBezier = n;
-        nBData = dynamic_cast<PathDescrBezierTo *>(from->descr_cmd[n]);
+        nBData = dynamic_cast<PathDescrBezierTo *>(from->descr_cmd[n].get());
         nbInterm = nBData->nb;
         break;
       }
@@ -1242,7 +1242,7 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
         dest->BezierTo (nx);
         for (int i = ps; i <= pe; i++)
         {
-          PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1]);
+          PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1].get());
           dest->IntermBezierTo (nData->p);
         }
         dest->EndBezierTo ();
@@ -1251,14 +1251,14 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
       {
         Geom::Point tx;
         {
-          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe]);
-          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+1]);
+          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe].get());
+          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+1].get());
           tx = (pnData->p + psData->p) / 2;
         }
         dest->BezierTo (tx);
         for (int i = ps; i < pe; i++)
         {
-          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1]);
+          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1].get());
           dest->IntermBezierTo (nData->p);
         }
         dest->EndBezierTo ();
@@ -1272,8 +1272,8 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
       {
         Geom::Point tx;
         {
-          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+1]);
-          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+2]);
+          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+1].get());
+          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+2].get());
           tx = (psData->p +  pnData->p) / 2;
         }
         ReFormeBezierChunk (px, tx, dest, inBezier, nbInterm,
@@ -1281,7 +1281,7 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
         dest->BezierTo (nx);
         for (int i = ps + 1; i <= pe; i++)
         {
-          PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1]);
+          PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1].get());
           dest->IntermBezierTo (nData->p);
         }
         dest->EndBezierTo ();
@@ -1290,21 +1290,21 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
       {
         Geom::Point tx;
         {
-          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+1]);
-          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+2]);
+          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+1].get());
+          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+2].get());
           tx = (pnData->p + psData->p) / 2;
         }
         ReFormeBezierChunk (px, tx, dest, inBezier, nbInterm,
                             from, ps, ts, 1.0);
         {
-          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe]);
-          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+1]);
+          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe].get());
+          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+1].get());
           tx = (pnData->p + psData->p) / 2;
         }
          dest->BezierTo (tx);
         for (int i = ps + 1; i <= pe; i++)
         {
-          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1]);
+          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1].get());
           dest->IntermBezierTo (nData->p);
         }
         dest->EndBezierTo ();
@@ -1322,7 +1322,7 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
         dest->BezierTo (nx);
         for (int i = ps; i >= pe; i--)
         {
-          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1]);
+          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1].get());
           dest->IntermBezierTo (nData->p);
         }
         dest->EndBezierTo ();
@@ -1331,14 +1331,14 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
       {
         Geom::Point tx;
         {
-          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+1]);
-          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+2]);
+          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+1].get());
+          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+2].get());
           tx = (pnData->p + psData->p) / 2;
         }
         dest->BezierTo (tx);
         for (int i = ps; i > pe; i--)
         {
-          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1]);
+          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i+1].get());
           dest->IntermBezierTo (nData->p);
         }
         dest->EndBezierTo ();
@@ -1352,8 +1352,8 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
       {
         Geom::Point tx;
         {
-          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps]);
-          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+1]);
+          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps].get());
+          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+1].get());
           tx = (pnData->p + psData->p) / 2;
         }
          ReFormeBezierChunk (px, tx, dest, inBezier, nbInterm,
@@ -1361,7 +1361,7 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
         dest->BezierTo (nx);
         for (int i = ps + 1; i >= pe; i--)
         {
-          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i]);
+          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i].get());
           dest->IntermBezierTo (nData->p);
         }
         dest->EndBezierTo ();
@@ -1370,21 +1370,21 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
       {
         Geom::Point tx;
         {
-          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps]);
-          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+1]);
+          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps].get());
+          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[ps+1].get());
           tx = (pnData->p + psData->p) / 2;
         }
         ReFormeBezierChunk (px, tx, dest, inBezier, nbInterm,
                             from, ps, ts, 0.0);
         {
-          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+1]);
-          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+2]);
+          PathDescrIntermBezierTo* psData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+1].get());
+          PathDescrIntermBezierTo* pnData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[pe+2].get());
           tx = (pnData->p + psData->p) / 2;
         }
         dest->BezierTo (tx);
         for (int i = ps + 1; i > pe; i--)
         {
-          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i]);
+          PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[i].get());
           dest->IntermBezierTo (nData->p);
         }
         dest->EndBezierTo ();
@@ -1401,7 +1401,7 @@ Shape::ReFormeBezierChunk (Geom::Point px, Geom::Point nx,
                            Path * dest, int inBezier, int nbInterm,
                            Path * from, int p, double ts, double te)
 {
-  PathDescrBezierTo* nBData = dynamic_cast<PathDescrBezierTo*>(from->descr_cmd[inBezier]);
+  PathDescrBezierTo* nBData = dynamic_cast<PathDescrBezierTo*>(from->descr_cmd[inBezier].get());
   Geom::Point bstx = from->PrevPoint (inBezier - 1);
   Geom::Point benx = nBData->p;
   
@@ -1412,15 +1412,15 @@ Shape::ReFormeBezierChunk (Geom::Point px, Geom::Point nx,
     if (nbInterm <= 1)
     {
       // seul bout de la spline
-      PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+1]);
+      PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+1].get());
       mx = nData->p;
     }
     else
     {
       // premier bout d'une spline qui en contient plusieurs
-      PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+1]);
+      PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+1].get());
       mx = nData->p;
-      nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+2]);
+      nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+2].get());
       benx = (nData->p + mx) / 2;
     }
   }
@@ -1429,19 +1429,19 @@ Shape::ReFormeBezierChunk (Geom::Point px, Geom::Point nx,
     // dernier bout
     // si nbInterm == 1, le cas a deja ete traite
     // donc dernier bout d'une spline qui en contient plusieurs
-    PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+nbInterm]);
+    PathDescrIntermBezierTo* nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+nbInterm].get());
     mx = nData->p;
-    nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+nbInterm-1]);
+    nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[inBezier+nbInterm-1].get());
     bstx = (nData->p + mx) / 2;
   }
   else
   {
     // la spline contient forcément plusieurs bouts, et ce n'est ni le premier ni le dernier
-    PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[p+1]);
+    PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[p+1].get());
     mx = nData->p;
-    nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[p]);
+    nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[p].get());
     bstx = (nData->p + mx) / 2;
-    nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[p+2]);
+    nData = dynamic_cast<PathDescrIntermBezierTo*>(from->descr_cmd[p+2].get());
     benx = (nData->p + mx) / 2;
   }
   Geom::Point cx;

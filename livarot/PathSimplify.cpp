@@ -1201,7 +1201,7 @@ void Path::Coalesce(double tresh)
     PathDescrCubicTo pending_cubic(Geom::Point(0, 0), Geom::Point(0, 0), Geom::Point(0, 0));
   
     for (int curP = 0; curP < int(descr_cmd.size()); curP++) {
-        int typ = descr_cmd[curP]->getType();
+        int typ = descr_cmd[curP].get()->getType();
         int nextA = lastA;
 
         if (typ == descr_moveto) {
@@ -1209,21 +1209,21 @@ void Path::Coalesce(double tresh)
             if (lastAddition->flags != descr_moveto) {
                 FlushPendingAddition(tempDest,lastAddition.get(),pending_cubic,lastAP);
             }
-            lastAddition.reset(descr_cmd[curP]->clone());
+            lastAddition.reset(descr_cmd[curP].get()->clone());
             lastAP = curP;
             FlushPendingAddition(tempDest, lastAddition.get(), pending_cubic, lastAP);
             // Added automatically (too bad about multiple moveto's).
             // [fr: (tant pis pour les moveto multiples)]
             containsForced = false;
       
-            PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[curP]);
+            PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[curP].get());
             firstP = nData->p;
-            lastA = descr_cmd[curP]->associated;
+            lastA = descr_cmd[curP].get()->associated;
             prevA = lastA;
             lastP = curP;
             
         } else if (typ == descr_close) {
-            nextA = descr_cmd[curP]->associated;
+            nextA = descr_cmd[curP].get()->associated;
             if (lastAddition->flags != descr_moveto) {
         
                 PathDescrCubicTo res(Geom::Point(0, 0), Geom::Point(0, 0), Geom::Point(0, 0));
@@ -1237,10 +1237,10 @@ void Path::Coalesce(double tresh)
                 }
 
                 FlushPendingAddition(tempDest, lastAddition.get(), pending_cubic, lastAP);
-                FlushPendingAddition(tempDest, descr_cmd[curP], pending_cubic, curP);
+                FlushPendingAddition(tempDest, descr_cmd[curP].get(), pending_cubic, curP);
         
 	    } else {
-                FlushPendingAddition(tempDest,descr_cmd[curP],pending_cubic,curP);
+                FlushPendingAddition(tempDest,descr_cmd[curP].get(),pending_cubic,curP);
 	    }
             
             containsForced = false;
@@ -1251,7 +1251,7 @@ void Path::Coalesce(double tresh)
             
         } else if (typ == descr_forced) {
             
-            nextA = descr_cmd[curP]->associated;
+            nextA = descr_cmd[curP].get()->associated;
             if (lastAddition->flags != descr_moveto) {
                 
                 PathDescrCubicTo res(Geom::Point(0, 0), Geom::Point(0, 0), Geom::Point(0, 0));
@@ -1274,7 +1274,7 @@ void Path::Coalesce(double tresh)
             
         } else if (typ == descr_lineto || typ == descr_cubicto || typ == descr_arcto) {
             
-            nextA = descr_cmd[curP]->associated;
+            nextA = descr_cmd[curP].get()->associated;
             if (lastAddition->flags != descr_moveto) {
                 
                 PathDescrCubicTo res(Geom::Point(0, 0), Geom::Point(0, 0), Geom::Point(0, 0));
@@ -1291,9 +1291,9 @@ void Path::Coalesce(double tresh)
                     lastA = descr_cmd[lastP]->associated;	// pourrait etre surecrit par la ligne suivante
                         /* (possible translation: Could be overwritten by the next line.) */
                     FlushPendingAddition(tempDest, lastAddition.get(), pending_cubic, lastAP);
-                    lastAddition.reset(descr_cmd[curP]->clone());
+                    lastAddition.reset(descr_cmd[curP].get()->clone());
                     if ( typ == descr_cubicto ) {
-                        pending_cubic = *(dynamic_cast<PathDescrCubicTo*>(descr_cmd[curP]));
+                        pending_cubic = *(dynamic_cast<PathDescrCubicTo*>(descr_cmd[curP].get()));
                     }
                     lastAP = curP;
                     containsForced = false;
@@ -1301,9 +1301,9 @@ void Path::Coalesce(double tresh)
         
 	    } else {
                 lastA = prevA /*descr_cmd[curP-1]->associated */ ;
-                lastAddition.reset(descr_cmd[curP]->clone());
+                lastAddition.reset(descr_cmd[curP].get()->clone());
                 if ( typ == descr_cubicto ) {
-                    pending_cubic = *(dynamic_cast<PathDescrCubicTo*>(descr_cmd[curP]));
+                    pending_cubic = *(dynamic_cast<PathDescrCubicTo*>(descr_cmd[curP].get()));
                 }
                 lastAP = curP;
                 containsForced = false;
@@ -1317,11 +1317,11 @@ void Path::Coalesce(double tresh)
                 lastAddition.reset(new PathDescrMoveTo(Geom::Point(0, 0)));
 	    }
             lastAP = -1;
-            lastA = descr_cmd[curP]->associated;
+            lastA = descr_cmd[curP].get()->associated;
             lastP = curP;
-            PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo*>(descr_cmd[curP]);
+            PathDescrBezierTo *nBData = dynamic_cast<PathDescrBezierTo*>(descr_cmd[curP].get());
             for (int i = 1; i <= nBData->nb; i++) {
-                FlushPendingAddition(tempDest, descr_cmd[curP + i], pending_cubic, curP + i);
+                FlushPendingAddition(tempDest, descr_cmd[curP + i].get(), pending_cubic, curP + i);
             }
             curP += nBData->nb;
             prevA = nextA;
@@ -1349,7 +1349,7 @@ void Path::FlushPendingAddition(Path *dest, PathDescr *lastAddition,
 
     case descr_moveto:
         if ( lastAP >= 0 ) {
-            PathDescrMoveTo* nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[lastAP]);
+            PathDescrMoveTo* nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[lastAP].get());
             dest->MoveTo(nData->p);
         }
         break;
@@ -1364,28 +1364,28 @@ void Path::FlushPendingAddition(Path *dest, PathDescr *lastAddition,
 
     case descr_lineto:
         if ( lastAP >= 0 ) {
-            PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[lastAP]);
+            PathDescrLineTo *nData = dynamic_cast<PathDescrLineTo *>(descr_cmd[lastAP].get());
             dest->LineTo(nData->p);
         }
         break;
 
     case descr_arcto:
         if ( lastAP >= 0 ) {
-            PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[lastAP]);
+            PathDescrArcTo *nData = dynamic_cast<PathDescrArcTo *>(descr_cmd[lastAP].get());
             dest->ArcTo(nData->p, nData->rx, nData->ry, nData->angle, nData->large, nData->clockwise);
         }
         break;
 
     case descr_bezierto:
         if ( lastAP >= 0 ) {
-            PathDescrBezierTo *nData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[lastAP]);
+            PathDescrBezierTo *nData = dynamic_cast<PathDescrBezierTo *>(descr_cmd[lastAP].get());
             dest->BezierTo(nData->p);
         }
         break;
 
     case descr_interm_bezier:
         if ( lastAP >= 0 ) {
-            PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[lastAP]);
+            PathDescrIntermBezierTo *nData = dynamic_cast<PathDescrIntermBezierTo*>(descr_cmd[lastAP].get());
             dest->IntermBezierTo(nData->p);
         }
         break;

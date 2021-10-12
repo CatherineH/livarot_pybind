@@ -344,7 +344,7 @@ public:
   static void OutlineJoin (Path * dest, Geom::Point pos, Geom::Point stNor, Geom::Point enNor,
 			   double width, JoinType join, double miter, int nType);
 
-  static bool IsNulCurve (std::vector<PathDescr*> const &cmd, int curD, Geom::Point const &curX);
+  static bool IsNulCurve (std::vector<std::shared_ptr<PathDescr>> const &cmd, int curD, Geom::Point const &curX);
 
   static void RecStdCubicTo (outline_callback_data * data, double tol,
 			     double width, int lev);
