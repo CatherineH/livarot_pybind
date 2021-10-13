@@ -10,7 +10,6 @@
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
 
-#include <glib.h>
 #include <cmath>
 #include <cstring>
 #include <string>
@@ -35,12 +34,12 @@ IntLigne::IntLigne()
 IntLigne::~IntLigne()
 {
     if ( maxBord > 0 ) {
-        g_free(bords);
+        free(bords);
         nbBord = maxBord = 0;
         bords = nullptr;
     }
     if ( maxRun > 0 ) {
-        g_free(runs);
+        free(runs);
         nbRun = maxRun = 0;
         runs = nullptr;
     }
@@ -57,7 +56,7 @@ int IntLigne::AddBord(int spos, float sval, int epos, float eval)
 {
     if ( nbBord + 1 >= maxBord ) {
         maxBord = 2 * nbBord + 2;
-        bords = (int_ligne_bord *) g_realloc(bords, maxBord * sizeof(int_ligne_bord));
+        bords = (int_ligne_bord *) realloc(bords, maxBord * sizeof(int_ligne_bord));
     
     }
     
@@ -166,7 +165,7 @@ int IntLigne::AddRun(int st, int en, float vst, float ven)
 
     if ( nbRun >= maxRun ) {
         maxRun = 2 * nbRun + 1;
-        runs = (int_ligne_run *) g_realloc(runs, maxRun * sizeof(int_ligne_run));
+        runs = (int_ligne_run *) realloc(runs, maxRun * sizeof(int_ligne_run));
     }
     
     int n = nbRun++;
@@ -787,7 +786,7 @@ void IntLigne::Copy(IntLigne *a)
     nbRun = a->nbRun;
     if ( nbRun > maxRun ) {
         maxRun = nbRun;
-        runs = (int_ligne_run*) g_realloc(runs, maxRun * sizeof(int_ligne_run));
+        runs = (int_ligne_run*) realloc(runs, maxRun * sizeof(int_ligne_run));
     }
     memcpy(runs, a->runs, nbRun * sizeof(int_ligne_run));
 }

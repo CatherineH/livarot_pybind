@@ -13,7 +13,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <glib.h>
 #include <2geom/affine.h>
 #include "Shape.h"
 #include "sweep-event-queue.h"
@@ -177,7 +176,7 @@ Shape::ConvertToShape (Shape * a, FillRule directed, bool invert)
     }
     
     if ( directed != fill_justDont && directedEulerian(a) == false ) {
-  			g_warning ("Shape error in ConvertToShape: directedEulerian(a) == false\n");
+  			std::cerr << "Shape error in ConvertToShape: directedEulerian(a) == false\n";
 				return shape_input_err;
     }
   
@@ -1987,7 +1986,7 @@ Shape::PushIncidence (Shape * a, int cb, int pt, double theta)
     {
       maxInc = 2 * nbInc + 1;
       iData =
-	(incidenceData *) g_realloc(iData, maxInc * sizeof (incidenceData));
+	(incidenceData *) realloc(iData, maxInc * sizeof (incidenceData));
     }
   int n = nbInc++;
   iData[n].nextInc = a->swsData[cb].firstLinkedPoint;

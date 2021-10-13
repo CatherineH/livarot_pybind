@@ -9,7 +9,6 @@
  */
 #include "stringstream.h"
 #include <2geom/point.h>
-#include <glib.h>
 
 std::string
 strip_trailing_zeros(std::string str)
@@ -25,7 +24,7 @@ strip_trailing_zeros(std::string str)
                                                                   ? e_ix
                                                                   : e_ix - 1));
         if (nz_ix == std::string::npos || nz_ix < p_ix || nz_ix >= e_ix) {
-            g_error("have `.' but couldn't find non-0");
+            throw("have `.' but couldn't find non-0");
         } else {
             str.erase(str.begin() + (nz_ix == p_ix
                                      ? p_ix

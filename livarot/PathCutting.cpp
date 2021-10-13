@@ -26,7 +26,6 @@
 #include <2geom/affine.h>
 #include <2geom/sbasis-to-bezier.h>
 #include <2geom/curves.h>
-#include <glib.h>
 #include "geom-curves.h"
 #include "geom.h"
 
@@ -287,12 +286,12 @@ Path::MakePathVector()
             case descr_cubicto:
             {
                 PathDescrCubicTo *nData = dynamic_cast<PathDescrCubicTo *>(descr_cmd[i].get());
-                gdouble x1=lastP[0]+0.333333*nData->start[0];
-                gdouble y1=lastP[1]+0.333333*nData->start[1];
-                gdouble x2=nData->p[0]-0.333333*nData->end[0];
-                gdouble y2=nData->p[1]-0.333333*nData->end[1];
-                gdouble x3=nData->p[0];
-                gdouble y3=nData->p[1];
+                double x1=lastP[0]+0.333333*nData->start[0];
+                double y1=lastP[1]+0.333333*nData->start[1];
+                double x2=nData->p[0]-0.333333*nData->end[0];
+                double y2=nData->p[1]-0.333333*nData->end[1];
+                double x3=nData->p[0];
+                double y3=nData->p[1];
                 currentpath->appendNew<Geom::CubicBezier>( Geom::Point(x1,y1) , Geom::Point(x2,y2) , Geom::Point(x3,y3) );
                 lastP = nData->p;
             }
@@ -306,12 +305,12 @@ Path::MakePathVector()
                     bezNb=0;
                 } else if ( nData->nb == 1 ){
                     PathDescrIntermBezierTo *iData = dynamic_cast<PathDescrIntermBezierTo *>(descr_cmd[i+1].get());
-                    gdouble x1=0.333333*(lastP[0]+2*iData->p[0]);
-                    gdouble y1=0.333333*(lastP[1]+2*iData->p[1]);
-                    gdouble x2=0.333333*(nData->p[0]+2*iData->p[0]);
-                    gdouble y2=0.333333*(nData->p[1]+2*iData->p[1]);
-                    gdouble x3=nData->p[0];
-                    gdouble y3=nData->p[1];
+                    double x1=0.333333*(lastP[0]+2*iData->p[0]);
+                    double y1=0.333333*(lastP[1]+2*iData->p[1]);
+                    double x2=0.333333*(nData->p[0]+2*iData->p[0]);
+                    double y2=0.333333*(nData->p[1]+2*iData->p[1]);
+                    double x3=nData->p[0];
+                    double y3=nData->p[1];
                     currentpath->appendNew<Geom::CubicBezier>( Geom::Point(x1,y1) , Geom::Point(x2,y2) , Geom::Point(x3,y3) );
                     bezNb=0;
                 } else {
@@ -336,12 +335,12 @@ Path::MakePathVector()
                     }
 
                     Geom::Point  cp1=0.333333*(p_s+2*p_m),cp2=0.333333*(2*p_m+p_e);
-                    gdouble x1=cp1[0];
-                    gdouble y1=cp1[1];
-                    gdouble x2=cp2[0];
-                    gdouble y2=cp2[1];
-                    gdouble x3=p_e[0];
-                    gdouble y3=p_e[1];
+                    double x1=cp1[0];
+                    double y1=cp1[1];
+                    double x2=cp2[0];
+                    double y2=cp2[1];
+                    double x3=p_e[0];
+                    double y3=p_e[1];
                     currentpath->appendNew<Geom::CubicBezier>( Geom::Point(x1,y1) , Geom::Point(x2,y2) , Geom::Point(x3,y3) );
 
                     bezNb--;
@@ -506,7 +505,7 @@ Path**      Path::SubPaths(int &outNb,bool killNoSurf)
             curAdd->Convert(1.0);
             double addSurf=curAdd->Surface();
             if ( fabs(addSurf) > 0.0001 || killNoSurf == false ) {
-              res=(Path**)g_realloc(res,(nbRes+1)*sizeof(Path*));
+              res=(Path**)realloc(res,(nbRes+1)*sizeof(Path*));
               res[nbRes++]=curAdd;
             } else { 
               delete curAdd;
@@ -567,7 +566,7 @@ Path**      Path::SubPaths(int &outNb,bool killNoSurf)
       curAdd->Convert(1.0);
       double addSurf=curAdd->Surface();
       if ( fabs(addSurf) > 0.0001 || killNoSurf == false  ) {
-        res=(Path**)g_realloc(res,(nbRes+1)*sizeof(Path*));
+        res=(Path**)realloc(res,(nbRes+1)*sizeof(Path*));
         res[nbRes++]=curAdd;
       } else {
         delete curAdd;
@@ -601,7 +600,7 @@ Path**      Path::SubPathsWithNesting(int &outNb,bool killNoSurf,int nbNest,int*
             curAdd->descr_cmd[0]->associated=savA; // associated n'est pas utilise apres
             double addSurf=curAdd->Surface();
             if ( fabs(addSurf) > 0.0001 || killNoSurf == false ) {
-              res=(Path**)g_realloc(res,(nbRes+1)*sizeof(Path*));
+              res=(Path**)realloc(res,(nbRes+1)*sizeof(Path*));
               res[nbRes++]=curAdd;
             } else { 
               delete curAdd;
@@ -681,7 +680,7 @@ Path**      Path::SubPathsWithNesting(int &outNb,bool killNoSurf,int nbNest,int*
       curAdd->Convert(1.0);
       double addSurf=curAdd->Surface();
       if ( fabs(addSurf) > 0.0001 || killNoSurf == false  ) {
-        res=(Path**)g_realloc(res,(nbRes+1)*sizeof(Path*));
+        res=(Path**)realloc(res,(nbRes+1)*sizeof(Path*));
         res[nbRes++]=curAdd;
       } else {
         delete curAdd;
@@ -886,7 +885,7 @@ Path::cut_position* Path::CurvilignToPosition(int nbCv, double *cvAbs, int &nbCu
             
             while ( curAdd > 0.0001 && curCv < nbCv && curPos + curAdd >= cvAbs[curCv] ) {
                 double const theta = (cvAbs[curCv] - len) / add;
-                res = (cut_position*) g_realloc(res, (nbCut + 1) * sizeof(cut_position));
+                res = (cut_position*) realloc(res, (nbCut + 1) * sizeof(cut_position));
                 res[nbCut].piece = pt.piece;
                 res[nbCut].t = theta * pt.t + (1 - theta) * ( (lastPiece != pt.piece) ? 0 : lastT);
                 nbCut++;

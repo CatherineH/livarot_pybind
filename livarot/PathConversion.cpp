@@ -10,7 +10,6 @@
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
 
-#include <glib.h>
 #include <2geom/transforms.h>
 #include "Path.h"
 #include "Shape.h"
@@ -644,7 +643,7 @@ const Geom::Point Path::PrevPoint(int i) const
 {
     /* TODO: I suspect this should assert `(unsigned) i < descr_nb'.  We can probably change
        the argument to unsigned.  descr_nb should probably be changed to unsigned too. */
-    g_assert( i >= 0 );
+    assert( i >= 0 );
     switch ( descr_cmd[i]->getType() ) {
         case descr_moveto: {
             PathDescrMoveTo *nData = dynamic_cast<PathDescrMoveTo *>(descr_cmd[i].get());
@@ -671,7 +670,7 @@ const Geom::Point Path::PrevPoint(int i) const
         case descr_forced:
             return PrevPoint(i - 1);
         default:
-            g_assert_not_reached();
+            throw("PrevPoint was unknown");
             return Geom::Point(0, 0);
     }
 }

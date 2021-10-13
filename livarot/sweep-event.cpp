@@ -7,7 +7,6 @@
  * Copyright (C) 2018 Authors
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
-#include <glib.h>
 #include "sweep-event-queue.h"
 #include "sweep-tree.h"
 #include "sweep-event.h"
@@ -18,13 +17,13 @@ SweepEventQueue::SweepEventQueue(int s) : nbEvt(0), maxEvt(s)
     /* FIXME: use new[] for this, but this causes problems when delete[]
     ** calls the SweepEvent destructors.
     */
-    events = (SweepEvent *) g_malloc(maxEvt * sizeof(SweepEvent));
+    events = (SweepEvent *) malloc(maxEvt * sizeof(SweepEvent));
     inds = new int[maxEvt];
 }
 
 SweepEventQueue::~SweepEventQueue()
 {
-    g_free(events);
+    free(events);
     delete []inds;
 }
 

@@ -10,7 +10,6 @@
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
 
-#include <glib.h>
 #include "Path.h"
 #include "path-description.h"
 
@@ -899,7 +898,7 @@ char *Path::svg_dump_path() const
         descr_cmd[i]->dumpSVG(os, p);
     }
   
-    return g_strdup (os.str().c_str());
+    return strdup (os.str().c_str());
 }
 
 // Find out if the segment that corresponds to 'piece' is a straight line

@@ -13,7 +13,6 @@
 #include "Shape.h"
 #include "Path.h"
 #include "path-description.h"
-#include <glib.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -396,7 +395,7 @@ Shape::ConvertToFormeNested (Path * dest, int nbP, std::vector<Path> * orig, int
           parentContour=-1;
         } else {
           if (getEdge(askTo).prevS >= 0) {
-              parentContour = GPOINTER_TO_INT(swdData[askTo].misc);
+              parentContour = (int)(long)swdData[askTo].misc;
               parentContour-=1; // pour compenser le decalage
           }
           childEdge = getPoint(fi % numberOfPoints()).incidentEdge[FIRST];
@@ -467,8 +466,8 @@ Shape::ConvertToFormeNested (Path * dest, int nbP, std::vector<Path> * orig, int
 //                }
 //                tb=swdData[tb].precParc;
 //              }
-              nesting=(int*)g_realloc(nesting,(nbNest+1)*sizeof(int));
-              contStart=(int*)g_realloc(contStart,(nbNest+1)*sizeof(int));
+              nesting=(int*)realloc(nesting,(nbNest+1)*sizeof(int));
+              contStart=(int*)realloc(contStart,(nbNest+1)*sizeof(int));
               contStart[nbNest]=dest->descr_cmd.size();
               if (foundChild) {
                 nesting[nbNest++]=parentContour;
@@ -508,8 +507,8 @@ Shape::ConvertToFormeNested (Path * dest, int nbP, std::vector<Path> * orig, int
 //                }
 //                tb=swdData[tb].precParc;
 //              }
-              nesting=(int*)g_realloc(nesting,(nbNest+1)*sizeof(int));
-              contStart=(int*)g_realloc(contStart,(nbNest+1)*sizeof(int));
+              nesting=(int*)realloc(nesting,(nbNest+1)*sizeof(int));
+              contStart=(int*)realloc(contStart,(nbNest+1)*sizeof(int));
               contStart[nbNest]=dest->descr_cmd.size();
               if (foundChild) {
                 nesting[nbNest++]=parentContour;
@@ -662,8 +661,8 @@ Shape::MakeTweak (int mode, Shape *a, double power, JoinType join, double miter,
 		} else if (mode == tweak_mode_repel) {
 			this_vec = this_power * scaler * to_center_normalized;
 		} else if (mode == tweak_mode_roughen) {
-  		double angle = g_random_double_range(0, 2*M_PI);
-	  	this_vec = g_random_double_range(0, 1) * this_power * scaler * Geom::Point(sin(angle), cos(angle));
+  		double angle = (double)rand()*2*M_PI / RAND_MAX;
+	  	this_vec = (double)rand() * this_power * scaler * Geom::Point(sin(angle), cos(angle))/ RAND_MAX;
 		}
 
     int   usePathID=-1;
@@ -1226,7 +1225,9 @@ Shape::ReFormeBezierTo (int bord, int /*curBord*/, Path * dest, Path * from)
     bord = swdData[bord].suivParc;
   }
 
-  g_return_val_if_fail(nBData != nullptr, 0);
+  if(nBData != nullptr){
+    return 0;
+  }
   
   if (pe == ps)
   {

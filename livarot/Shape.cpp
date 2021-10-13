@@ -12,7 +12,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <glib.h>
 #include "Shape.h"
 #include "sweep-event-queue.h"
 #include "sweep-tree-list.h"
@@ -141,7 +140,7 @@ Shape::MakeQuickRasterData (bool nVal)
           _has_quick_raster_data = true;
           quick_raster_data* new_qrsData = static_cast<quick_raster_data*>(realloc(qrsData, maxAr * sizeof(quick_raster_data)));
           if (!new_qrsData) {
-              g_error("Not enough memory available for reallocating Shape::qrsData");
+              throw("Not enough memory available for reallocating Shape::qrsData");
           } else {
               qrsData = new_qrsData;
           }
@@ -1490,7 +1489,7 @@ Shape::SortEdges ()
   }
   _need_edges_sorting = false;
 
-  edge_list *list = (edge_list *) g_malloc(numberOfEdges() * sizeof (edge_list));
+  edge_list *list = (edge_list *) malloc(numberOfEdges() * sizeof (edge_list));
   for (int p = 0; p < numberOfPoints(); p++)
     {
       int const d = getPoint(p).totalDegree();
@@ -1561,7 +1560,7 @@ Shape::SortEdges ()
             }
         }
     }
-  g_free(list);
+  free(list);
 }
 
 int
@@ -2169,7 +2168,7 @@ void Shape::initialiseEdgeData()
 
 void Shape::clearIncidenceData()
 {
-    g_free(iData);
+    free(iData);
     iData = nullptr;
     nbInc = maxInc = 0;
 }

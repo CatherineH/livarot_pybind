@@ -7,7 +7,6 @@
  * Copyright (C) 2018 Authors
  * Released under GNU GPL v2+, read the file 'COPYING' for more information.
  */
-#include <glib.h>
 #include "sweep-tree.h"
 #include "sweep-tree-list.h"
 
@@ -15,7 +14,7 @@
 SweepTreeList::SweepTreeList(int s) :
     nbTree(0),
     maxTree(s),
-    trees((SweepTree *) g_malloc(s * sizeof(SweepTree))),
+    trees((SweepTree *) malloc(s * sizeof(SweepTree))),
     racine(nullptr)
 {
     /* FIXME: Use new[] for trees initializer above, but watch out for bad things happening when
@@ -26,7 +25,7 @@ SweepTreeList::SweepTreeList(int s) :
 
 SweepTreeList::~SweepTreeList()
 {
-    g_free(trees);
+    free(trees);
     trees = nullptr;
 }
 

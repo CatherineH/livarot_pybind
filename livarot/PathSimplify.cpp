@@ -11,7 +11,6 @@
  */
 
 #include <memory>
-#include <glib.h>
 #include <2geom/affine.h>
 #include "Path.h"
 #include "path-description.h"
@@ -233,12 +232,12 @@ void Path::DoSimplify(int off, int N, double treshhold)
         Close();
     }
   
-    g_free(data.Xk);
-    g_free(data.Yk);
-    g_free(data.Qk);
-    g_free(data.tk);
-    g_free(data.lk);
-    g_free(data.fk);
+    free(data.Xk);
+    free(data.Yk);
+    free(data.Qk);
+    free(data.tk);
+    free(data.lk);
+    free(data.fk);
 }
 
 
@@ -327,12 +326,12 @@ bool Path::ExtendFit(int off, int N, fitting_tables &data, double treshhold, Pat
 {
     if ( N >= data.maxPt ) {
         data.maxPt = 2 * N + 1;
-        data.Xk = (double *) g_realloc(data.Xk, data.maxPt * sizeof(double));
-        data.Yk = (double *) g_realloc(data.Yk, data.maxPt * sizeof(double));
-        data.Qk = (double *) g_realloc(data.Qk, data.maxPt * sizeof(double));
-        data.tk = (double *) g_realloc(data.tk, data.maxPt * sizeof(double));
-        data.lk = (double *) g_realloc(data.lk, data.maxPt * sizeof(double));
-        data.fk = (char *) g_realloc(data.fk, data.maxPt * sizeof(char));
+        data.Xk = (double *) realloc(data.Xk, data.maxPt * sizeof(double));
+        data.Yk = (double *) realloc(data.Yk, data.maxPt * sizeof(double));
+        data.Qk = (double *) realloc(data.Qk, data.maxPt * sizeof(double));
+        data.tk = (double *) realloc(data.tk, data.maxPt * sizeof(double));
+        data.lk = (double *) realloc(data.lk, data.maxPt * sizeof(double));
+        data.fk = (char *) realloc(data.fk, data.maxPt * sizeof(char));
     }
     
     if ( N > data.inPt ) {
@@ -776,12 +775,12 @@ bool Path::AttemptSimplify(int off, int N, double treshhold, PathDescrCubicTo &r
     }
   
     // Totally inefficient, allocates & deallocates all the time.
-    tk = (double *) g_malloc(N * sizeof(double));
-    Qk = (double *) g_malloc(N * sizeof(double));
-    Xk = (double *) g_malloc(N * sizeof(double));
-    Yk = (double *) g_malloc(N * sizeof(double));
-    lk = (double *) g_malloc(N * sizeof(double));
-    fk = (char *) g_malloc(N * sizeof(char));
+    tk = (double *) malloc(N * sizeof(double));
+    Qk = (double *) malloc(N * sizeof(double));
+    Xk = (double *) malloc(N * sizeof(double));
+    Yk = (double *) malloc(N * sizeof(double));
+    lk = (double *) malloc(N * sizeof(double));
+    fk = (char *) malloc(N * sizeof(char));
   
     // chord length method
     tk[0] = 0.0;
@@ -833,12 +832,12 @@ bool Path::AttemptSimplify(int off, int N, double treshhold, PathDescrCubicTo &r
             }
         }
         
-        g_free(tk);
-        g_free(Qk);
-        g_free(Xk);
-        g_free(Yk);
-        g_free(fk);
-        g_free(lk);
+        free(tk);
+        free(Qk);
+        free(Xk);
+        free(Yk);
+        free(fk);
+        free(lk);
         
         return false;
     }
@@ -876,12 +875,12 @@ bool Path::AttemptSimplify(int off, int N, double treshhold, PathDescrCubicTo &r
             }
         }
         
-        g_free(tk);
-        g_free(Qk);
-        g_free(Xk);
-        g_free(Yk);
-        g_free(fk);
-        g_free(lk);
+        free(tk);
+        free(Qk);
+        free(Xk);
+        free(Yk);
+        free(fk);
+        free(lk);
         return false;
     }
    
@@ -997,12 +996,12 @@ bool Path::AttemptSimplify(int off, int N, double treshhold, PathDescrCubicTo &r
       // ca devrait jamais arriver, mais bon
       res.start = 3.0 * (cp1 - start);
       res.end = -3.0 * (cp2 - end);
-      g_free(tk);
-      g_free(Qk);
-      g_free(Xk);
-      g_free(Yk);
-      g_free(fk);
-      g_free(lk);
+      free(tk);
+      free(Qk);
+      free(Xk);
+      free(Yk);
+      free(fk);
+      free(lk);
       return true;
     }
     double ndelta = 0;
@@ -1089,12 +1088,12 @@ bool Path::AttemptSimplify(int off, int N, double treshhold, PathDescrCubicTo &r
 #endif
     }
     
-    g_free(tk);
-    g_free(Qk);
-    g_free(Xk);
-    g_free(Yk);
-    g_free(fk);
-    g_free(lk);
+    free(tk);
+    free(Qk);
+    free(Xk);
+    free(Yk);
+    free(fk);
+    free(lk);
     
     if (ndelta < delta + 0.00001)
     {
@@ -1109,12 +1108,12 @@ bool Path::AttemptSimplify(int off, int N, double treshhold, PathDescrCubicTo &r
     // nothing better to do
   }
   
-  g_free(tk);
-  g_free(Qk);
-  g_free(Xk);
-  g_free(Yk);
-  g_free(fk);
-  g_free(lk);
+  free(tk);
+  free(Qk);
+  free(Xk);
+  free(Yk);
+  free(fk);
+  free(lk);
   return false;
 }
 
