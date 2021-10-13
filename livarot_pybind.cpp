@@ -19,8 +19,11 @@ PYBIND11_MODULE(_pylivarot, m) {
     py::module_ m2geom = m.def_submodule("py2geom", "python bindings to the functionality within 2geom");
     py::class_<Geom::PathVector>(m2geom, "PathVector")
         .def(py::init<>())
+        .def("__iter__", [](const Geom::PathVector &s) { return py::make_iterator(s.begin(), s.end()); },
+                         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def("push_back", &Geom::PathVector::push_back)
         .def("back", py::overload_cast<>(&Geom::PathVector::back))
+        .def("reverse", &Geom::PathVector::reverse, py::arg("reverse_paths") = true)
         .def("boundsFast", &Geom::PathVector::boundsFast);
     py::class_<Geom::Path>(m2geom, "Path")
         .def(py::init<>())
@@ -87,6 +90,7 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("LoadPathVector", py::overload_cast<Geom::PathVector const &>(&Path::LoadPathVector))
         .def("ConvertWithBackData", &Path::ConvertWithBackData)
         .def("SetBackData", &Path::SetBackData)
+        .def("svg_dump_path", &Path::svg_dump_path)
         .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
                 py::arg("closeIfNeeded")=true, py::arg("invert")=false);
 

@@ -13,7 +13,7 @@ class TestPathBoolop:
         self.pvTargetUnion = py2geom.parse_svg_path(rectangle_outside_union)
         self.pvEmpty = py2geom.parse_svg_path("") 
 
-    def compare_paths(result, target):
+    def compare_paths(self, result, target):
         result_d = py2geom.write_svg_path(result)
         target_d = py2geom.write_svg_path(target)
         assert result_d == target_d
