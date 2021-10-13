@@ -43,11 +43,7 @@ void Path::Affiche()
 }
 
 void Path::Reset()
-{
-    for (auto & i : descr_cmd) {
-        delete i.get();
-    }
-    
+{   
     descr_cmd.clear();
     pending_bezier_cmd = -1;
     pending_moveto_cmd = -1;

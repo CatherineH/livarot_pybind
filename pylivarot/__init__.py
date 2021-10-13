@@ -154,3 +154,86 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb):
     outres = py2geom.parse_svg_path(result_str)
 
     return outres
+
+
+def get_outline(pathva, stroke_width):
+    bbox_only = False
+    pathv = pathv_to_linear_and_cubic_beziers( pathva )
+    if stroke_width < py2geom.EPSILON:
+        # https://bugs.launchpad.net/inkscape/+bug/1244861
+        stroke_width = py2geom.EPSILON
+    
+    butt = ButtType.butt_straight
+    join = JoinType.join_straight
+    miter = stroke_width
+    '''
+    double miter = style->stroke_miterlimit.value * stroke_width;
+
+    JoinType join;
+    switch (style->stroke_linejoin.computed) {
+        case SP_STROKE_LINEJOIN_MITER:
+            join = join_pointy;
+            break;
+        case SP_STROKE_LINEJOIN_ROUND:
+            join = join_round;
+            break;
+        default:
+            join = join_straight;
+            break;
+    }
+    switch (style->stroke_linecap.computed) {
+        case SP_STROKE_LINECAP_SQUARE:
+            butt = butt_square;
+            break;
+        case SP_STROKE_LINECAP_ROUND:
+            butt = butt_round;
+            break;
+        default:
+            butt = butt_straight;
+            break;
+    }
+    '''
+    origin = Path() # Fill
+    offset = Path()
+
+    '''
+    Geom::Affine const transform(item->transform);
+    double const scale = transform.descrim();
+    '''
+
+    origin.LoadPathVector(pathv)
+    offset.SetBackData(False)
+
+    '''
+    if (!style->stroke_dasharray.values.empty()) {
+        // We have dashes!
+        origin->ConvertWithBackData(0.005); // Approximate by polyline
+        origin->DashPolylineFromStyle(style, scale, 0);
+        auto bounds = Geom::bounds_fast(pathv);
+        if (bounds) {
+            double size = Geom::L2(bounds->dimensions());
+            origin->Simplify(size * 0.000005); // Polylines to Beziers
+        }
+    }
+    '''
+
+    # Finally do offset!
+    origin.Outline(offset, 0.5 * stroke_width, join, butt, 0.5 * miter);
+
+    if bbox_only:
+        stroke = offset.MakePathVector()
+    else:
+        # Clean-up shape
+
+        offset.ConvertWithBackData(1.0) # Approximate by polyline
+
+        theShape  = Shape();
+        offset.Fill(theShape, 0) # Convert polyline to shape, step 1.
+
+        theOffset = Shape()
+        theOffset.ConvertToShape(theShape, FillRule.fill_positive) # Create an intersection free polygon (theOffset), step2.
+        theOffset.ConvertToForme(origin, 1, [offset]) # Turn shape into contour (stored in origin).
+
+        stroke = origin.MakePathVector() #  Note origin was replaced above by stroke!
+    
+    return stroke

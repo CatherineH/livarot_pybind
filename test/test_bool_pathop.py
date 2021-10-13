@@ -1,4 +1,4 @@
-from pylivarot import sp_pathvector_boolop, bool_op, FillRule, py2geom
+from pylivarot import sp_pathvector_boolop, bool_op, FillRule, py2geom, get_outline
 #from py2geom import SVGPathParser, parse_svg_path, write_svg_path
 
 class TestPathBoolop:
@@ -37,6 +37,24 @@ class TestPathBoolop:
         # test that the intersection of two objects where one is completely inside the other is the smaller shape
         pvRectangleIntersection  = sp_pathvector_boolop(self.pvRectangleBigger, self.pvRectangleSmaller, bool_op.bool_op_inters, FillRule.fill_oddEven, FillRule.fill_oddEven)
         self.compare_paths(pvRectangleIntersection, self.pvRectangleSmaller)    
+
+    def test_intersection_path(self):
+        # test that intersection works for paths and solid objects
+        diagonal_line = "M 0,0 L 3,3 z"
+        pvDiagonalLine = py2geom.parse_svg_path(diagonal_line)
+        smaller_line = ""
+        pvSmallerLine = py2geom.parse_svg_path(smaller_line)
+        path_intersection  = sp_pathvector_boolop(self.pvRectangleBigger, pvDiagonalLine, bool_op.bool_op_inters, FillRule.fill_oddEven, FillRule.fill_oddEven)
+        self.compare_paths(path_intersection, pvSmallerLine)    
+
+    def test_intersection_path_outline(self):
+        # test that intersection works for paths when there's an outline and solid objects
+        diagonal_line = "M 0,0 L 3,3 z"
+        pvDiagonalLine = get_outline(py2geom.parse_svg_path(diagonal_line), 0.1)
+        smaller_line = "M 0 0 V 0.0703125 L 1.9296875 2 H 2 V 1.9296875 L 0.0703125 0 z"
+        pvSmallerLine = py2geom.parse_svg_path(smaller_line)
+        path_intersection  = sp_pathvector_boolop(self.pvRectangleBigger, pvDiagonalLine, bool_op.bool_op_inters, FillRule.fill_oddEven, FillRule.fill_oddEven)
+        self.compare_paths(path_intersection, pvSmallerLine)
 
     def test_difference_inside(self):
         # test that the difference of two objects where one is completely inside the other is an empty path

@@ -17,6 +17,7 @@ namespace py = pybind11;
 PYBIND11_MODULE(_pylivarot, m) {
     m.doc() = "python bindings to the functionality within livarot"; 
     py::module_ m2geom = m.def_submodule("py2geom", "python bindings to the functionality within 2geom");
+    m2geom.attr("EPSILON") = &Geom::EPSILON;
     py::class_<Geom::PathVector>(m2geom, "PathVector")
         .def(py::init<>())
         .def("__iter__", [](const Geom::PathVector &s) { return py::make_iterator(s.begin(), s.end()); },
@@ -67,6 +68,19 @@ PYBIND11_MODULE(_pylivarot, m) {
 
     m2geom.def("distance", py::overload_cast<Geom::Point const &, Geom::Point const &>(&Geom::distance));
 
+    py::enum_<butt_typ>(m, "ButtType")
+        .value("butt_straight", butt_typ::butt_straight)
+        .value("butt_square", butt_typ::butt_square)
+        .value("butt_round", butt_typ::butt_round)
+        .value("butt_pointy", butt_typ::butt_pointy)
+        .export_values();
+
+    py::enum_<join_typ>(m, "JoinType")
+        .value("join_straight", join_typ::join_straight)
+        .value("join_round", join_typ::join_round)
+        .value("join_pointy", join_typ::join_pointy)
+        .export_values();
+
     py::enum_<FillRule>(m, "FillRule")
 	    .value("fill_oddEven", FillRule::fill_oddEven)
 	    .value("fill_nonZero", FillRule::fill_nonZero)
@@ -90,6 +104,8 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("LoadPathVector", py::overload_cast<Geom::PathVector const &>(&Path::LoadPathVector))
         .def("ConvertWithBackData", &Path::ConvertWithBackData)
         .def("SetBackData", &Path::SetBackData)
+        .def("Outline", &Path::Outline)
+        .def("MakePathVector", &Path::MakePathVector)
         .def("svg_dump_path", &Path::svg_dump_path)
         .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
                 py::arg("closeIfNeeded")=true, py::arg("invert")=false);
