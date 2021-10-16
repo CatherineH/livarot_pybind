@@ -10,7 +10,7 @@
 
 #ifndef my_shape
 #define my_shape
-
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>

@@ -17,7 +17,8 @@
 
 #ifndef my_path
 #define my_path
-
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <vector>
 #include <memory>
 #include "LivarotDefs.h"

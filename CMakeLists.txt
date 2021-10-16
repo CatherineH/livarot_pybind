@@ -8,6 +8,7 @@ set(PYTHON_LIBRARY C:\\Program\ Files\\Python39\\libs\\python3.lib)
 set(Python_EXECUTABLE C:\\Program\ Files\\Python39\\python.exe)
 find_package(PythonLibs REQUIRED)
 find_package(PkgConfig REQUIRED)
+find_package(Boost 1.60 REQUIRED)
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 add_subdirectory(pybind11)
 
@@ -21,7 +22,13 @@ message("2geom libraries ${2Geom_INCLUDE_DIRS}")
 pybind11_add_module(_pylivarot MODULE livarot_pybind.cpp)
 set_property(TARGET _pylivarot PROPERTY CXX_STANDARD 17)
 target_include_directories(_pylivarot PUBLIC ${Python3_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS} livarot) 
+get_property(dirs TARGET _pylivarot PROPERTY INCLUDE_DIRECTORIES)
+message("pylivarot include_directories")
+foreach(dir ${dirs})
+  message("dir='${dir}'")
+endforeach()
 
-target_link_libraries(_pylivarot PUBLIC glib-2.0 2geom livarot gsl)
+target_link_libraries(_pylivarot PUBLIC 2geom livarot gsl)
+
 
 target_compile_definitions(_pylivarot PRIVATE)
