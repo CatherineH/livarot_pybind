@@ -32,21 +32,32 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("start", &Geom::Path::start)
         .def("initialPoint", &Geom::Path::initialPoint);
 
-    py::class_<Geom::PathSink>(m2geom, "PathSink");
+    py::class_<Geom::PathSink>(m2geom, "PathSink")
+        .def("feed", py::overload_cast<Geom::Curve const &, bool>(&Geom::PathSink::feed));
     py::class_<Geom::Rect>(m2geom, "Rect")
 	    .def("__getitem__", [](Geom::Rect &self, int i) {return self[i];});
     py::class_<Geom::OptRect>(m2geom, "OptRect")
 	    .def("__getitem__", [](Geom::OptRect &self, int i) { return self.value()[i]; } );
     py::class_<Geom::Point>(m2geom, "Point")
-	.def(py::init<>())
-	.def(py::init<Geom::Coord &, Geom::Coord &>());
-		
+    	.def(py::init<>())
+	    .def(py::init<Geom::Coord &, Geom::Coord &>());
+
+    py::class_<Geom::Curve>(m2geom, "Curve");
+    py::class_<Geom::LineSegment, Geom::Curve>(m2geom, "LineSegment")
+        .def(py::init<Geom::Point const &, Geom::Point const &>());
+    py::class_<Geom::QuadraticBezier, Geom::Curve>(m2geom, "QuadraticBezier")
+        .def(py::init<Geom::Point const &, Geom::Point const &, Geom::Point const &>());    
+    py::class_<Geom::CubicBezier, Geom::Curve>(m2geom, "CubicBezier")
+        .def(py::init<Geom::Point const &, Geom::Point const &, Geom::Point const &, Geom::Point const &>());
+        
+
     py::class_<Geom::Interval>(m2geom, "Interval")
-	.def("max", &Geom::Interval::max)
-	.def("min", &Geom::Interval::min);
+    	.def("max", &Geom::Interval::max)
+	    .def("min", &Geom::Interval::min);
 
     py::class_<Geom::PathBuilder, Geom::PathSink>(m2geom, "PathBuilder")
-        .def(py::init<>());
+        .def(py::init<>())
+        .def("moveTo", &Geom::PathBuilder::moveTo);
     py::class_<Geom::SVGPathParser>(m2geom, "SVGPathParser")
         .def(py::init<Geom::PathSink &>())
         .def("setZSnapThreshold", &Geom::SVGPathParser::setZSnapThreshold)
