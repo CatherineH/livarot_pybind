@@ -1,1 +1,4 @@
 Dockerfile
+dist
+build
+linux-build

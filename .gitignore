@@ -1,4 +1,5 @@
 build
+dist
 linux-build
 pylivarot/*.so
 __pycache__

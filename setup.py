@@ -9,5 +9,7 @@ setup(name='pylivarot',
       author_email='milankie@gmail.com',
       url='https://github.com/CatherineH/livarot_pybind',
       packages=['pylivarot'],
+      #include_package_data=True,
+      data_files=[('pylivarot', glob('pylivarot/*.so'))],
       package_data={'pylivarot': glob('pylivarot/*.so')},
      )
