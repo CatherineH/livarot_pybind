@@ -57,7 +57,12 @@ PYBIND11_MODULE(_pylivarot, m) {
 
     py::class_<Geom::PathBuilder, Geom::PathSink>(m2geom, "PathBuilder")
         .def(py::init<>())
-        .def("moveTo", &Geom::PathBuilder::moveTo);
+        .def("flush", &Geom::PathBuilder::flush)
+        .def("moveTo", &Geom::PathBuilder::moveTo)
+        .def("lineTo", &Geom::PathBuilder::lineTo)
+        .def("quadTo", &Geom::PathBuilder::quadTo)
+        .def("curveTo", &Geom::PathBuilder::curveTo)
+        .def("peek", &Geom::PathBuilder::peek);
     py::class_<Geom::SVGPathParser>(m2geom, "SVGPathParser")
         .def(py::init<Geom::PathSink &>())
         .def("setZSnapThreshold", &Geom::SVGPathParser::setZSnapThreshold)
