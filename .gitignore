@@ -1,5 +1,6 @@
 build
 dist
+pylivarot.egg-info
 linux-build
 pylivarot/*.so
 __pycache__

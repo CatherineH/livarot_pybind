@@ -121,11 +121,12 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("ConvertWithBackData", &Path::ConvertWithBackData)
         .def("SetBackData", &Path::SetBackData)
         .def("Outline", &Path::Outline)
+        .def("OutsideOutline", &Path::OutsideOutline)
+        .def("Simplify", &Path::Simplify)
         .def("MakePathVector", &Path::MakePathVector)
         .def("svg_dump_path", &Path::svg_dump_path)
         .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
                 py::arg("closeIfNeeded")=true, py::arg("invert")=false);
-
 
     py::enum_<bool_op>(m, "bool_op")
         .value("bool_op_union", bool_op::bool_op_union)

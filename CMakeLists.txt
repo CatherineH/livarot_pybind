@@ -25,12 +25,18 @@ pybind11_add_module(_pylivarot MODULE livarot_pybind.cpp)
 set_property(TARGET _pylivarot PROPERTY CXX_STANDARD 17)
 target_include_directories(_pylivarot PUBLIC ${Python3_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS} livarot) 
 
-
+target_link_directories(_pylivarot PUBLIC ${2Geom_LIBDIRS})
 target_link_libraries(_pylivarot PUBLIC 2geom livarot gsl)
 get_property(dirs TARGET _pylivarot PROPERTY LINK_DIRECTORIES)
 message("pylivarot link_directories")
 foreach(dir ${dirs})
   message("dir='${dir}'")
+endforeach()
+
+get_property(dirs TARGET _pylivarot PROPERTY LINK_LIBRARIES)
+message("pylivarot link_libraries")
+foreach(dir ${dirs})
+  message("lib='${dir}'")
 endforeach()
 
 target_compile_definitions(_pylivarot PRIVATE)

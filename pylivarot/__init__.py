@@ -1,6 +1,6 @@
 import sys
-from os.path import dirname, join
-sys.path.append(join(dirname(dirname(__file__)), "linux-build"))
+from os.path import dirname
+sys.path.append(dirname(__file__))
 
 #mport _pylivarot.py2geom as py2geom
 from _pylivarot import *
@@ -154,6 +154,26 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb):
     outres = py2geom.parse_svg_path(result_str)
 
     return outres
+
+def get_outline_offset(pathva, stroke_width):
+    orig = Path()
+    orig.LoadPathVector(pathva)
+    res = Path()
+    res.SetBackData(False)
+    butt = ButtType.butt_straight
+    join = JoinType.join_straight
+    orig.OutsideOutline(res, stroke_width, join, butt, 20.0)
+    if stroke_width >= 1:
+        res.ConvertWithBackData(1.0)
+    else:
+        res.ConvertWithBackData(stroke_width)
+    theShape = Shape()
+    theRes = Shape()
+    res.Fill(theShape, 0)
+    theRes.ConvertToForme(orig, 1, [res])
+    # skipping the coalesce 
+    res_d = orig.svg_dump_path()
+    return py2geom.parse_svg_path(res_d)
 
 
 def get_outline(pathva, stroke_width):
