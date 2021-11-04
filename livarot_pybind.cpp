@@ -23,13 +23,17 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def(py::init<>())
         .def("__iter__", [](const Geom::PathVector &s) { return py::make_iterator(s.begin(), s.end()); },
                          py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
-        .def("__imul__", [](const Geom::PathVector& pv, const Geom::Affine t)  { pv *= t; return pv; })
         .def("push_back", &Geom::PathVector::push_back)
+        .def("boundsFast", &Geom::PathVector::boundsFast)
         .def("back", py::overload_cast<>(&Geom::PathVector::back))
+        .def("curveCount", &Geom::PathVector::curveCount)
+        .def("size", &Geom::PathVector::size)
         .def("reverse", &Geom::PathVector::reverse, py::arg("reverse_paths") = true)
         .def("boundsFast", &Geom::PathVector::boundsFast);
     py::class_<Geom::Path>(m2geom, "Path")
         .def(py::init<>())
+        .def("__iter__", [](const Geom::Path &s) { return py::make_iterator(s.begin(), s.end()); },
+                         py::keep_alive<0, 1>())
         .def("setStitching", &Geom::Path::setStitching)
         .def("start", &Geom::Path::start)
         .def("initialPoint", &Geom::Path::initialPoint);
@@ -37,17 +41,38 @@ PYBIND11_MODULE(_pylivarot, m) {
     py::class_<Geom::PathSink>(m2geom, "PathSink")
         .def("feed", py::overload_cast<Geom::Curve const &, bool>(&Geom::PathSink::feed));
     py::class_<Geom::Rect>(m2geom, "Rect")
+        .def(py::init<>())
+        .def(py::init<Geom::Interval const &, Geom::Interval const &>())
+        .def("height", &Geom::Rect::height)
+        .def("width", &Geom::Rect::width)
+        .def("unionWith", [](Geom::Rect &self, Geom::OptRect &other){ self.unionWith(other);})
+        .def("unionWith", [](Geom::Rect &self, Geom::Rect &other){ self.unionWith(other);})
 	    .def("__getitem__", [](Geom::Rect &self, int i) {return self[i];});
     py::class_<Geom::OptRect>(m2geom, "OptRect")
-	    .def("__getitem__", [](Geom::OptRect &self, int i) { return self.value()[i]; } );
+        .def(py::init<>())
+        .def(py::init<Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>())
+        .def(py::init<Geom::Point &, Geom::Point &>())
+	    .def("__getitem__", [](Geom::OptRect &self, int i) { return self.value()[i]; } )
+        .def("unionWith", [](Geom::OptRect &self, Geom::OptRect &other){ self.unionWith(other);})
+        .def("unionWith", [](Geom::OptRect &self, Geom::Rect &other){ self.unionWith(other);})
+        .def("empty", &Geom::OptRect::empty);
+
     py::class_<Geom::Point>(m2geom, "Point")
     	.def(py::init<>())
 	    .def(py::init<Geom::Coord &, Geom::Coord &>());
     py::class_<Geom::Affine>(m2geom, "Affine")
         .def(py::init<>())
-        .def(py::init<Geom::Coord &, Geom::Coord &,Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>());
+        .def(py::init<Geom::Coord &, Geom::Coord &,Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>())
+        .def("__imul__", [](Geom::Affine self, Geom::Translate other){ self *= other; return self;});
 
-    py::class_<Geom::Curve>(m2geom, "Curve");
+    py::class_<Geom::Translate>(m2geom, "Translate")
+        .def(py::init<>())
+        .def(py::init<Geom::Point const &>())
+        .def(py::init<Geom::Coord const &, Geom::Coord const &>());
+        
+
+    py::class_<Geom::Curve>(m2geom, "Curve")
+        .def("transform", &Geom::Curve::transform);
     py::class_<Geom::LineSegment, Geom::Curve>(m2geom, "LineSegment")
         .def(py::init<Geom::Point const &, Geom::Point const &>());
     py::class_<Geom::QuadraticBezier, Geom::Curve>(m2geom, "QuadraticBezier")

@@ -15,7 +15,7 @@ def Path_for_pathvector(epathv):
 
 def get_threshold(path, threshold):
     box = path.boundsFast()
-    if not box:
+    if not box or box.empty():
         return threshold
     diagonal = py2geom.distance(py2geom.Point(box[py2geom.X].min(), box[py2geom.Y].min()),
      py2geom.Point(box[py2geom.X].max(), box[py2geom.Y].max()))
@@ -52,7 +52,6 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb):
         originaux[1].Fill(theShape, 1)
 
         theShapeB.ConvertToShape(theShape, origWind[1])
-        
         theShape.Booleen(theShapeB, theShapeA, bop)
     elif bop == bool_op.bool_op_cut:
         # cuts= sort of a bastard boolean operation, thus not the axact same modus operandi
