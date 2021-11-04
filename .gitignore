@@ -1,5 +1,6 @@
 build
 dist
+pylivarot-1.0
 pylivarot.egg-info
 linux-build
 pylivarot/*.so

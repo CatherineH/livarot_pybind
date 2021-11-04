@@ -18,10 +18,12 @@ PYBIND11_MODULE(_pylivarot, m) {
     m.doc() = "python bindings to the functionality within livarot"; 
     py::module_ m2geom = m.def_submodule("py2geom", "python bindings to the functionality within 2geom");
     m2geom.attr("EPSILON") = &Geom::EPSILON;
+
     py::class_<Geom::PathVector>(m2geom, "PathVector")
         .def(py::init<>())
         .def("__iter__", [](const Geom::PathVector &s) { return py::make_iterator(s.begin(), s.end()); },
                          py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+        .def("__imul__", [](const Geom::PathVector& pv, const Geom::Affine t)  { pv *= t; return pv; })
         .def("push_back", &Geom::PathVector::push_back)
         .def("back", py::overload_cast<>(&Geom::PathVector::back))
         .def("reverse", &Geom::PathVector::reverse, py::arg("reverse_paths") = true)
@@ -41,6 +43,9 @@ PYBIND11_MODULE(_pylivarot, m) {
     py::class_<Geom::Point>(m2geom, "Point")
     	.def(py::init<>())
 	    .def(py::init<Geom::Coord &, Geom::Coord &>());
+    py::class_<Geom::Affine>(m2geom, "Affine")
+        .def(py::init<>())
+        .def(py::init<Geom::Coord &, Geom::Coord &,Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>());
 
     py::class_<Geom::Curve>(m2geom, "Curve");
     py::class_<Geom::LineSegment, Geom::Curve>(m2geom, "LineSegment")
@@ -125,6 +130,7 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("Simplify", &Path::Simplify)
         .def("MakePathVector", &Path::MakePathVector)
         .def("svg_dump_path", &Path::svg_dump_path)
+        .def("Transform", &Path::Transform)
         .def("Fill", &Path::Fill, py::arg("dest")=static_cast<Shape *>(nullptr), py::arg("pathID")=-1, py::arg("justAdd")=false, 
                 py::arg("closeIfNeeded")=true, py::arg("invert")=false);
 

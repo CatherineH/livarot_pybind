@@ -53,9 +53,9 @@ find_package(Boost 1.60 REQUIRED)
 pkg_check_modules(2Geom 2geom>=1.1.0)
 pkg_check_modules(glib glib-2.0)
 pkg_check_modules(GSL REQUIRED gsl)
-#find_library(DoubleConversion_LIBRARY double-conversion PATHS ${DoubleConversion_LIBRARYDIR})
+find_library(DoubleConversion_LIBRARY double-conversion PATHS ${DoubleConversion_LIBRARYDIR})
 
-#find_path(DoubleConversion_INCLUDE_DIR double-conversion/double-conversion.h PATHS ${DoubleConversion_INCLUDEDIR})
+find_path(DoubleConversion_INCLUDE_DIR double-conversion/double-conversion.h PATHS ${DoubleConversion_INCLUDEDIR})
 find_package_handle_standard_args(DoubleConversion DEFAULT_MSG
 	  DoubleConversion_LIBRARY
 	    DoubleConversion_INCLUDE_DIR)

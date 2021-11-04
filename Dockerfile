@@ -18,5 +18,4 @@ RUN cp docker-build/*.so pylivarot
 RUN pip3 install build
 RUN python3 -m build
 RUN pip3 install dist/*.whl
-RUN ls /usr/local/lib/python3.8/dist-packages/pylivarot
 RUN pytest-3 test
