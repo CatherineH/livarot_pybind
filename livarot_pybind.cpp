@@ -43,6 +43,8 @@ PYBIND11_MODULE(_pylivarot, m) {
     py::class_<Geom::Rect>(m2geom, "Rect")
         .def(py::init<>())
         .def(py::init<Geom::Interval const &, Geom::Interval const &>())
+        .def(py::init<Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>())
+        .def(py::init<Geom::Point &, Geom::Point &>())
         .def("height", &Geom::Rect::height)
         .def("width", &Geom::Rect::width)
         .def("unionWith", [](Geom::Rect &self, Geom::OptRect &other){ self.unionWith(other);})
@@ -50,6 +52,7 @@ PYBIND11_MODULE(_pylivarot, m) {
 	    .def("__getitem__", [](Geom::Rect &self, int i) {return self[i];});
     py::class_<Geom::OptRect>(m2geom, "OptRect")
         .def(py::init<>())
+        .def(py::init<Geom::Interval const &, Geom::Interval const &>())
         .def(py::init<Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>())
         .def(py::init<Geom::Point &, Geom::Point &>())
 	    .def("__getitem__", [](Geom::OptRect &self, int i) { return self.value()[i]; } )
@@ -63,7 +66,9 @@ PYBIND11_MODULE(_pylivarot, m) {
     py::class_<Geom::Affine>(m2geom, "Affine")
         .def(py::init<>())
         .def(py::init<Geom::Coord &, Geom::Coord &,Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>())
-        .def("__imul__", [](Geom::Affine self, Geom::Translate other){ self *= other; return self;});
+        .def("__imul__", [](Geom::Affine self, Geom::Translate other){ self *= other; return self;})
+        .def("expansionX", &Geom::Affine::expansionX)
+        .def("expansionY", &Geom::Affine::expansionY);
 
     py::class_<Geom::Translate>(m2geom, "Translate")
         .def(py::init<>())

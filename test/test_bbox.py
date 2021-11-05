@@ -49,6 +49,5 @@ class TestBBox:
         assert opt_rect.empty()
 
 
-
 if __name__ == "__main__":
     TestBBox().test_get_bounds()

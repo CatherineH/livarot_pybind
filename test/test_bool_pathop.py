@@ -21,7 +21,6 @@ class TestPathBoolop:
     def test_union_empty_pathvector(self):
         # test that the union of two objects where one is empty results in the same shape
         pvRectangleUnion  = sp_pathvector_boolop(py2geom.PathVector(), self.pvRectangleBigger, bool_op.bool_op_union, FillRule.fill_oddEven, FillRule.fill_oddEven)
-        print("path vector", py2geom.write_svg_path(py2geom.PathVector()))
         self.compare_paths(pvRectangleUnion, self.pvTargetUnion)
 
     def test_union_empty_swap(self):

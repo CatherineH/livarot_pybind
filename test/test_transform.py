@@ -32,3 +32,11 @@ class TestTransform:
                 _curve.transform(transform)
         result_d = py2geom.write_svg_path(pv_path)
         assert result_d == "M 22 0 V 2 H 24 V 0 z"
+
+    def test_expansion_x(self):
+        transform = py2geom.Affine(4, 0, -1, 0, 3, 0)
+        assert transform.expansionX() == 4
+
+    def test_expansion_y(self):
+        transform = py2geom.Affine(1, 0, -1, 0, 3, 5)
+        assert transform.expansionY() == 1
