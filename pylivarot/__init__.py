@@ -22,7 +22,7 @@ def get_threshold(path, threshold):
     return threshold * diagonal/ 100 
 
 
-def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb):
+def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb, skip_conversion=False):
     """
     do the boolean operation between pathva and pathvb. The syntax is the same as the code in the inkscape path code
     """
@@ -30,7 +30,10 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb):
     # also get the winding rule specified in the style    
     origWind = [fra, frb]
     # Livarot's outline of arcs is broken. So convert the path to linear and cubics only, for which the outline is created correctly.
-    originaux = [Path_for_pathvector(pathv_to_linear_and_cubic_beziers(pathva)), Path_for_pathvector(pathv_to_linear_and_cubic_beziers(pathvb))]
+    if skip_conversion:
+        originaux = [Path_for_pathvector(pathva), Path_for_pathvector(pathvb)]
+    else:
+        originaux = [Path_for_pathvector(pathv_to_linear_and_cubic_beziers(pathva)), Path_for_pathvector(pathv_to_linear_and_cubic_beziers(pathvb))]
     # some temporary instances, first
     theShapeA = Shape()
     theShapeB = Shape()
@@ -149,10 +152,8 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb):
     else:
         theShape.ConvertToForme(res, nbOriginaux, originaux)
 
-    result_str = res.svg_dump_path()
-    outres = py2geom.parse_svg_path(result_str)
+    return res.MakePathVector()
 
-    return outres
 
 def get_outline_offset(pathva, stroke_width):
     orig = Path()

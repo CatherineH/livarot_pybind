@@ -1,0 +1,26 @@
+FROM quay.io/pypa/manylinux_2_24_x86_64
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y wget gpg pkg-config libgsl-dev \
+    libdouble-conversion-dev libglib2.0-dev libgtkmm-3.0-dev libgtest-dev libboost-dev python3-pytest \
+    python3-venv python3-pip apt-transport-https ca-certificates
+RUN apt install -y cmake apt-file
+# install a newer version of gcc in order to use C++ 17
+RUN apt install -y dirmngr && apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1E9377A2BA9EF27F && \
+  echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu xenial main" >> /etc/apt/sources.list && \
+  apt-get update && apt-get install -y --no-install-recommends gcc-9 g++-9
+# get the latest version of cmake - not needed
+#RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
+# echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
+# apt-get update && apt-get install -y cmake=3.21.3-0kitware1ubuntu20.04.1
+# TODO: step to checkout and build lib2geom
+# the headers are in /opt/python/cp36-cp36m/include/python3.6m/
+# versions: cp310-cp310  cp36-cp36m  cp37-cp37m  cp38-cp38  cp39-cp39  pp37-pypy37_pp73  pp38-pypy38_pp73
+RUN mkdir /livarot
+COPY . /livarot
+WORKDIR "/livarot"
+RUN CC=/usr/bin/gcc-9 CXX=/usr/bin/g++-9 cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -S lib2geom -B lib2geom/docker-build
+RUN CC=/usr/bin/gcc-9 CXX=/usr/bin/g++-9 cmake --build lib2geom/docker-build
+RUN cmake --install lib2geom/docker-build
+RUN /opt/python/cp36-cp36m/bin/pip3 wheel --only-binary :all: --verbose .
+RUN /opt/python/cp36-cp36m/bin/pip3 install pylivarot-1.0-cp36-cp36-linux_x86_64.whl
+RUN /opt/python/cp36-cp36m/bin/python -m pytest test
+# RUN twine upload *.whl

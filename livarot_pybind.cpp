@@ -36,7 +36,9 @@ PYBIND11_MODULE(_pylivarot, m) {
                          py::keep_alive<0, 1>())
         .def("setStitching", &Geom::Path::setStitching)
         .def("start", &Geom::Path::start)
-        .def("initialPoint", &Geom::Path::initialPoint);
+        .def("initialPoint", &Geom::Path::initialPoint)
+        .def("boundsFast", &Geom::Path::boundsFast)
+        .def("boundsExact", &Geom::Path::boundsExact);
 
     py::class_<Geom::PathSink>(m2geom, "PathSink")
         .def("feed", py::overload_cast<Geom::Curve const &, bool>(&Geom::PathSink::feed));
@@ -47,6 +49,10 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def(py::init<Geom::Point &, Geom::Point &>())
         .def("height", &Geom::Rect::height)
         .def("width", &Geom::Rect::width)
+        .def("top", &Geom::Rect::top)
+        .def("bottom", &Geom::Rect::bottom)
+        .def("left", &Geom::Rect::left)
+        .def("right", &Geom::Rect::right)
         .def("unionWith", [](Geom::Rect &self, Geom::OptRect &other){ self.unionWith(other);})
         .def("unionWith", [](Geom::Rect &self, Geom::Rect &other){ self.unionWith(other);})
 	    .def("__getitem__", [](Geom::Rect &self, int i) {return self[i];});
