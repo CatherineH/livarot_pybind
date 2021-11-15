@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(LivarotPy)
+# this is unfortunately required in order to make a "manylinux" wheel suitable for pypi
+set(BUILD_SHARED_LIBS OFF)
 
 include(FindPython3)
 # TODO: try specifying a specific version in find_package(Python3)
@@ -40,11 +42,12 @@ add_subdirectory(livarot)
 message("2geom libraries ${2Geom_INCLUDE_DIRS}")
 #python3_add_library(pylivarot MODULE livarot_pybind.cpp)
 pybind11_add_module(_pylivarot MODULE livarot_pybind.cpp)
+add_link_options("--static")
 set_property(TARGET _pylivarot PROPERTY CXX_STANDARD 17)
 target_include_directories(_pylivarot PUBLIC ${Python3_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS} livarot) 
 
-target_link_directories(_pylivarot PUBLIC ${2Geom_LIBDIRS})
-target_link_libraries(_pylivarot PUBLIC 2geom livarot gsl)
+#target_link_directories(_pylivarot PUBLIC ${2Geom_LIBDIRS})
+#target_link_libraries(_pylivarot PUBLIC 2geom livarot gsl)
 get_property(dirs TARGET _pylivarot PROPERTY LINK_DIRECTORIES)
 message("pylivarot link_directories")
 foreach(dir ${dirs})

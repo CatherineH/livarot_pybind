@@ -26,14 +26,23 @@ class cmake_build_ext(build_ext):
 
             if not os.path.exists(self.build_temp):
                 os.makedirs(self.build_temp)
+            env = os.environ
 
-            env = dict(os.environ, CC='/usr/bin/gcc-9', CXX='/usr/bin/g++-9')
+            if os.path.exists('/usr/bin/gcc-8'):
+                env['CC']='/usr/bin/gcc-8'
+            if os.path.exists('/usr/bin/g++-8'):
+                env['CXX'] = '/usr/bin/g++-8'
+
             # Config
             extra_config_args = []
             pythontag = f'python{sys.version_info.major}.{sys.version_info.minor}'
             extra_config_args.append(f"-DPYTHON_LIBRARIES={os.path.join(sys.base_prefix, 'lib', pythontag)}")
             extra_config_args.append(f"-DPYTHON_INCLUDE_DIRS={sysconfig.get_config_var('INCLUDEPY')}") # this might need to be the subdir
             extra_config_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
+            if os.path.exists('/usr/include/boost69'):
+                extra_config_args.append(f"-DBOOST_INCLUDEDIR=/usr/include/boost169")
+            if os.path.exists('/usr/lib64/boost169/'):
+                extra_config_args.append(f"-DBOOST_LIBRARYDIR=/usr/lib64/boost169")
             subprocess.check_call(['cmake', "-S", extdir]+extra_config_args, cwd=self.build_temp, env=env)
             
             # Build

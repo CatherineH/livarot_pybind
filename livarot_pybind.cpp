@@ -38,7 +38,8 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("start", &Geom::Path::start)
         .def("initialPoint", &Geom::Path::initialPoint)
         .def("boundsFast", &Geom::Path::boundsFast)
-        .def("boundsExact", &Geom::Path::boundsExact);
+        .def("boundsExact", &Geom::Path::boundsExact)
+        .def("closed", &Geom::Path::closed);
 
     py::class_<Geom::PathSink>(m2geom, "PathSink")
         .def("feed", py::overload_cast<Geom::Curve const &, bool>(&Geom::PathSink::feed));

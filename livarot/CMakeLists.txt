@@ -1,4 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+# this is unfortunately required in order to make a "manylinux" wheel suitable for pypi
+set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_EXE_LINKER_FLAGS "-static")
 include(FindPackageHandleStandardArgs)
 set(livarot_SRC
 	path-description.cpp
