@@ -21,8 +21,9 @@ RUN CC=/usr/bin/gcc-8 CXX=/usr/bin/g++-8 cmake -DCMAKE_POSITION_INDEPENDENT_CODE
 RUN CC=/usr/bin/gcc-8 CXX=/usr/bin/g++-8 cmake --build lib2geom/docker-build
 RUN cmake --install lib2geom/docker-build
 RUN /opt/python/cp36-cp36m/bin/pip3 wheel --only-binary :all: --verbose .
-#RUN auditwheel repair pylivarot-1.0-cp36-cp36m-linux_x86_64.whl
+RUN auditwheel repair pylivarot-1.0-cp36-cp36m-linux_x86_64.whl
 #RUN auditwheel repair pylivarot-1.0-cp36-cp36-linux_x86_64.whl
-#RUN /opt/python/cp36-cp36m/bin/pip3 install pylivarot-1.0-cp36-cp36-linux_x86_64.whl
-#RUN /opt/python/cp36-cp36m/bin/python -m pytest test
+RUN /opt/python/cp36-cp36m/bin/pip3 install  /livarot/wheelhouse/pylivarot-1.0-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl
+RUN /opt/python/cp36-cp36m/bin/pip3 install pytest
+RUN /opt/python/cp36-cp36m/bin/python -m pytest test
 # RUN twine upload *.whl

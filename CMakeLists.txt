@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(LivarotPy)
 # this is unfortunately required in order to make a "manylinux" wheel suitable for pypi
 set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_CXX_FLAGS "-static-libstdc++")
 
 include(FindPython3)
 # TODO: try specifying a specific version in find_package(Python3)
