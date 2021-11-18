@@ -21,8 +21,11 @@ PYBIND11_MODULE(_pylivarot, m) {
 
     py::class_<Geom::PathVector>(m2geom, "PathVector")
         .def(py::init<>())
+        .def("__eq__", [](const Geom::PathVector &s, const Geom::PathVector &other){return (s == other);})
         .def("__iter__", [](const Geom::PathVector &s) { return py::make_iterator(s.begin(), s.end()); },
                          py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+        .def("__len__", &Geom::PathVector::size)
+        .def("__getitem__", [](const Geom::PathVector &s, int index){ return s[index]; })
         .def("push_back", &Geom::PathVector::push_back)
         .def("boundsFast", &Geom::PathVector::boundsFast)
         .def("back", py::overload_cast<>(&Geom::PathVector::back))

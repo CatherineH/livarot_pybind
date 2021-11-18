@@ -1,5 +1,6 @@
-Dockerfile
+Dockerfile.*
 dist
 build
 *.whl
-linux-build
+linux-
+.git

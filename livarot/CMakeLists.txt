@@ -53,7 +53,7 @@ set(livarot_SRC
 
 find_package(PkgConfig REQUIRED)
 find_package(Boost 1.60 REQUIRED)
-pkg_check_modules(2Geom 2geom>=1.1.0)
+#pkg_check_modules(2Geom 2geom>=1.1.0)
 pkg_check_modules(glib glib-2.0)
 pkg_check_modules(GSL REQUIRED gsl)
 find_library(DoubleConversion_LIBRARY double-conversion PATHS ${DoubleConversion_LIBRARYDIR})
@@ -64,14 +64,16 @@ find_package_handle_standard_args(DoubleConversion DEFAULT_MSG
 	    DoubleConversion_INCLUDE_DIR)
 
 message("DoubleConversion libraries libdir ${DoubleConversion_LIBRARY} includedir ${DoubleConversion_INCLUDE_DIR}")
-
+add_subdirectory(lib2geom)
+#add_subdirectory(lib2geom/src/2geom)
 add_library(livarot STATIC ${livarot_SRC})
 set_property(TARGET livarot PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_property(TARGET livarot PROPERTY CXX_STANDARD 17)
 #add_inkscape_lib(livarot_LIB "${livarot_SRC}")
-target_include_directories(livarot PUBLIC . ${glib_INCLUDE_DIRS} ${2Geom_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${DoubleConversion_INCLUDE_DIR})
+target_include_directories(livarot PUBLIC . ${glib_INCLUDE_DIRS} ${2GEOM_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${DoubleConversion_INCLUDE_DIR})
 #target_link_directories(livarot ${2Geom_LIBDIR} ${GSL_LIBDIR} ${glib_LIBDIR})
 #target_link_libraries(livarot ${GSL_LDFLAGS} 2geom glib-2.0 ${DoubleConversion_LIBRARY})
+target_link_libraries(livarot 2geom)
 get_property(dirs TARGET livarot PROPERTY LINK_DIRECTORIES)
 message("livarot link_directories")
 foreach(dir ${dirs})

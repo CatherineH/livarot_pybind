@@ -35,10 +35,10 @@ class cmake_build_ext(build_ext):
 
             # Config
             extra_config_args = []
-            pythontag = f'python{sys.version_info.major}.{sys.version_info.minor}'
-            extra_config_args.append(f"-DPYTHON_LIBRARIES={os.path.join(sys.base_prefix, 'lib', pythontag)}")
+            extra_config_args.append(f"-DPYTHON_LIBRARIES={sysconfig.get_config_var('LIBDEST')}")
             extra_config_args.append(f"-DPYTHON_INCLUDE_DIRS={sysconfig.get_config_var('INCLUDEPY')}") # this might need to be the subdir
             extra_config_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
+            extra_config_args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
             if os.path.exists('/usr/include/boost69'):
                 extra_config_args.append(f"-DBOOST_INCLUDEDIR=/usr/include/boost169")
             if os.path.exists('/usr/lib64/boost169/'):
@@ -56,7 +56,10 @@ class cmake_build_ext(build_ext):
         # copy all the built files into the lib dir. Not sure why this is needed; it feels like setuptools should 
         # copy the built files into the bdist by default
         lib_dir = os.path.join(self.build_lib, "pylivarot")
-        for _file in glob(os.path.join(self.build_temp, f"*{sys.version_info.major}{sys.version_info.minor}*.so")):
+        pylivarot_sos = glob(os.path.join(self.build_temp, f"*{sys.version_info.major}{sys.version_info.minor}*.so"))
+        if len(pylivarot_sos) == 0:
+            raise FileNotFoundError(f"could not find *{sys.version_info.major}{sys.version_info.minor}*.so in {os.listdir(self.build_temp)}")
+        for _file in pylivarot_sos:
             print("copying ", _file," to ", os.path.join(lib_dir, os.path.basename(_file)))
             shutil.move(_file, os.path.join(lib_dir, os.path.basename(_file)))
         
@@ -68,6 +71,6 @@ setup(name='pylivarot',
       author_email='milankie@gmail.com',
       url='https://github.com/CatherineH/livarot_pybind',
       packages=['pylivarot'],
-      ext_modules = [Extension("pylivarot", [])],
+      ext_modules = [Extension("pylivarot", ["pybind11", "lib2geom"])],
       cmdclass = {'build_ext': cmake_build_ext}
 )
