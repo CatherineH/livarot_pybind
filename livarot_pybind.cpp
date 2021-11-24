@@ -2,6 +2,7 @@
 #include <pybind11/stl.h>
 #include <2geom/svg-path-parser.h>
 #include <2geom/svg-path-writer.h>
+#include <2geom/path.h>
 #include <2geom/path-sink.h>
 #include <2geom/pathvector.h>
 #include <2geom/point.h>
@@ -28,15 +29,20 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def("__getitem__", [](const Geom::PathVector &s, int index){ return s[index]; })
         .def("push_back", &Geom::PathVector::push_back)
         .def("boundsFast", &Geom::PathVector::boundsFast)
+        .def("boundsExact", &Geom::PathVector::boundsExact)
         .def("back", py::overload_cast<>(&Geom::PathVector::back))
         .def("curveCount", &Geom::PathVector::curveCount)
         .def("size", &Geom::PathVector::size)
-        .def("reverse", &Geom::PathVector::reverse, py::arg("reverse_paths") = true)
-        .def("boundsFast", &Geom::PathVector::boundsFast);
+        .def("reverse", &Geom::PathVector::reverse, py::arg("reverse_paths") = true);
+
     py::class_<Geom::Path>(m2geom, "Path")
         .def(py::init<>())
         .def("__iter__", [](const Geom::Path &s) { return py::make_iterator(s.begin(), s.end()); },
                          py::keep_alive<0, 1>())
+        .def("__eq__", [](const Geom::Path &s, const Geom::Path &other){return (s == other);})
+        //.def("__getitem__", [](const Geom::Path &s, int index){ std::unique_ptr<Geom::Curve> out(*s[index]); return out; })
+        .def("__getitem__", [](const Geom::Path &s, int index){ return &s[index];})
+        .def("__len__", &Geom::Path::size)
         .def("setStitching", &Geom::Path::setStitching)
         .def("start", &Geom::Path::start)
         .def("initialPoint", &Geom::Path::initialPoint)
@@ -77,6 +83,7 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def(py::init<>())
         .def(py::init<Geom::Coord &, Geom::Coord &,Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>())
         .def("__imul__", [](Geom::Affine self, Geom::Translate other){ self *= other; return self;})
+        .def("__imul__", [](Geom::Affine self, Geom::Rotate other){ self *= other; return self;})
         .def("expansionX", &Geom::Affine::expansionX)
         .def("expansionY", &Geom::Affine::expansionY);
 
@@ -85,11 +92,20 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def(py::init<Geom::Point const &>())
         .def(py::init<Geom::Coord const &, Geom::Coord const &>());
         
+    py::class_<Geom::Rotate>(m2geom, "Rotate")
+        .def(py::init<>())
+        .def(py::init<Geom::Coord const &>())
+        .def(py::init<Geom::Point const &>())
+        .def(py::init<Geom::Coord const &, Geom::Coord const &>());
 
     py::class_<Geom::Curve>(m2geom, "Curve")
+        .def("__eq__", [](const Geom::Curve &s, const Geom::Curve &other){return (s == other);})
         .def("transform", &Geom::Curve::transform);
     py::class_<Geom::LineSegment, Geom::Curve>(m2geom, "LineSegment")
-        .def(py::init<Geom::Point const &, Geom::Point const &>());
+        .def(py::init<Geom::Point const &, Geom::Point const &>())
+        ;
+    py::class_<Geom::Path::ClosingSegment, Geom::LineSegment, Geom::Curve>(m2geom, "ClosingSegment");
+
     py::class_<Geom::QuadraticBezier, Geom::Curve>(m2geom, "QuadraticBezier")
         .def(py::init<Geom::Point const &, Geom::Point const &, Geom::Point const &>());    
     py::class_<Geom::CubicBezier, Geom::Curve>(m2geom, "CubicBezier")

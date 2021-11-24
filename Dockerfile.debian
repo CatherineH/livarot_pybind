@@ -50,16 +50,18 @@ RUN /opt/python/cp310-cp310/bin/pip3 install  /livarot/wheelhouse/pylivarot-1.0-
 RUN /opt/python/cp310-cp310/bin/pip3 install pytest
 RUN cd /testdir && /opt/python/cp310-cp310/bin/python -m pytest /livarot/test
 
-RUN /opt/python/pp37-pypy37_pp73/bin/pip3 wheel --only-binary :all: --verbose .
-RUN auditwheel repair pylivarot-1.0-pp37-pypy37_pp73-linux_x86_64.whl
-RUN /opt/python/pp37-pypy37_pp73/bin/pip3 install  /livarot/wheelhouse/pylivarot-1.0-pp37-pypy37_pp73-manylinux_2_24_x86_64.whl
-RUN /opt/python/pp37-pypy37_pp73/bin/pip3 install pytest
-RUN cd /testdir && /opt/python/pp37-pypy37_pp73/bin/python -m pytest /livarot/test
+# pypy doesn't seem to import the same way
+# RUN /opt/python/pp37-pypy37_pp73/bin/pip3 wheel --only-binary :all: --verbose .
+# RUN auditwheel repair pylivarot-1.0-pp37-pypy37_pp73-linux_x86_64.whl
+# RUN /opt/python/pp37-pypy37_pp73/bin/pip3 install  /livarot/wheelhouse/pylivarot-1.0-pp37-pypy37_pp73-manylinux_2_24_x86_64.whl
+# RUN /opt/python/pp37-pypy37_pp73/bin/pip3 install pytest
+# RUN cd /testdir && /opt/python/pp37-pypy37_pp73/bin/python -m pytest /livarot/test
 
-RUN /opt/python/p38-pypy38_pp73/bin/pip3 wheel --only-binary :all: --verbose .
-RUN auditwheel repair pylivarot-1.0-p38-pypy38_pp73-linux_x86_64.whl
-RUN /opt/python/p38-pypy38_pp73/bin/pip3 install  /livarot/wheelhouse/pylivarot-1.0-p38-pypy38_pp73-manylinux_2_24_x86_64.whl
-RUN /opt/python/p38-pypy38_pp73/bin/pip3 install pytest
-RUN cd /testdir && /opt/python/p38-pypy38_pp73/bin/python -m pytest /livarot/test
-
-RUN twine upload /livarot/wheelhouse/*.whl
+# RUN /opt/python/p38-pypy38_pp73/bin/pip3 wheel --only-binary :all: --verbose .
+# RUN auditwheel repair pylivarot-1.0-p38-pypy38_pp73-linux_x86_64.whl
+# RUN /opt/python/p38-pypy38_pp73/bin/pip3 install  /livarot/wheelhouse/pylivarot-1.0-p38-pypy38_pp73-manylinux_2_24_x86_64.whl
+# RUN /opt/python/p38-pypy38_pp73/bin/pip3 install pytest
+# RUN cd /testdir && /opt/python/p38-pypy38_pp73/bin/python -m pytest /livarot/test
+RUN pip3 install twine
+RUN cp /livarot/.pypirc /root/.pypirc
+RUN twine upload --verbose /livarot/wheelhouse/*.whl
