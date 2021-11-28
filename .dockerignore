@@ -1,6 +1,8 @@
 Dockerfile.*
 dist
 build
+win-build
 *.whl
 linux-
 .git
+.*
