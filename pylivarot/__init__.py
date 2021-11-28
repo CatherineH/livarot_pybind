@@ -155,6 +155,18 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb, skip_conversion=False):
     return res.MakePathVector()
 
 
+def union(path_vector_a, path_vector_b):
+    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_union, FillRule.fill_oddEven, FillRule.fill_oddEven)
+
+
+def intersection(path_vector_a, path_vector_b):
+    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_inters, FillRule.fill_oddEven, FillRule.fill_oddEven)
+
+
+def difference(path_vector_a, path_vector_b):
+    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_diff, FillRule.fill_oddEven, FillRule.fill_oddEven)
+
+
 def get_outline_offset(pathva, stroke_width):
     orig = Path()
     orig.LoadPathVector(pathva)

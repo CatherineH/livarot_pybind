@@ -79,6 +79,9 @@ PYBIND11_MODULE(_pylivarot, m) {
     py::class_<Geom::Point>(m2geom, "Point")
     	.def(py::init<>())
 	    .def(py::init<Geom::Coord &, Geom::Coord &>());
+    
+    m2geom.def("atan2", py::overload_cast<Geom::Point const &>(&Geom::atan2));
+
     py::class_<Geom::Affine>(m2geom, "Affine")
         .def(py::init<>())
         .def(py::init<Geom::Coord &, Geom::Coord &,Geom::Coord &, Geom::Coord &, Geom::Coord &, Geom::Coord &>())

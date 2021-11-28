@@ -38,6 +38,8 @@ class cmake_build_ext(build_ext):
             extra_config_args.append(f"-DPYTHON_LIBRARIES={sysconfig.get_config_var('LIBDEST')}")
             extra_config_args.append(f"-DPYTHON_INCLUDE_DIRS={sysconfig.get_config_var('INCLUDEPY')}") # this might need to be the subdir
             extra_config_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
+            extra_config_args.append(f"-DPYTHON_MAJOR={sys.version_info.major}")
+            extra_config_args.append(f"-DPYTHON_MINOR={sys.version_info.minor}")
             extra_config_args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
             if os.path.exists('/usr/include/boost69'):
                 extra_config_args.append(f"-DBOOST_INCLUDEDIR=/usr/include/boost169")
@@ -64,12 +66,7 @@ class cmake_build_ext(build_ext):
             shutil.move(_file, os.path.join(lib_dir, os.path.basename(_file)))
         
 
-setup(name='pylivarot',
-      version='1.0',
-      description='Python bindings to Inkscape\'s livarot library',
-      author='Catherine Holloway',
-      author_email='milankie@gmail.com',
-      url='https://github.com/CatherineH/livarot_pybind',
+setup(
       packages=['pylivarot'],
       ext_modules = [Extension("pylivarot", ["pybind11", "lib2geom"])],
       cmdclass = {'build_ext': cmake_build_ext}

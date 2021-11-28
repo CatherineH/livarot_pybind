@@ -64,4 +64,4 @@ RUN cd /testdir && /opt/python/cp310-cp310/bin/python -m pytest /livarot/test
 # RUN cd /testdir && /opt/python/p38-pypy38_pp73/bin/python -m pytest /livarot/test
 RUN pip3 install twine
 RUN cp /livarot/.pypirc /root/.pypirc
-RUN twine upload --verbose /livarot/wheelhouse/*.whl
+#RUN twine upload --verbose /livarot/wheelhouse/*.whl
