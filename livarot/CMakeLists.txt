@@ -52,7 +52,7 @@ set(livarot_SRC
 )
 
 find_package(PkgConfig REQUIRED)
-find_package(Boost 1.60 REQUIRED)
+#find_package(Boost 1.60 REQUIRED)
 #pkg_check_modules(2Geom 2geom>=1.1.0)
 pkg_check_modules(glib glib-2.0)
 pkg_check_modules(GSL REQUIRED gsl)
