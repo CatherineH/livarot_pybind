@@ -27,32 +27,48 @@ class cmake_build_ext(build_ext):
             if not os.path.exists(self.build_temp):
                 os.makedirs(self.build_temp)
             env = os.environ
-
-            if os.path.exists('/usr/bin/gcc-8'):
-                env['CC']='/usr/bin/gcc-8'
-            if os.path.exists('/usr/bin/g++-8'):
-                env['CXX'] = '/usr/bin/g++-8'
-
+            possible_gcc_paths = ['/usr/bin/gcc-8', '/c/msys64/mingw64/bin/gcc', 'C://msys64/mingw64/bin/gcc.exe']
+            for possible_path in possible_gcc_paths:
+                if os.path.exists(possible_path):
+                    env['CC'] = possible_path
+                    break
+            possible_gpp_paths = ['/usr/bin/g++-8', '/c/msys64/mingw64/bin/g++', 'C://msys64/mingw64/bin/g++.exe']
+            for possible_path in possible_gpp_paths:
+                if os.path.exists(possible_path):
+                    env['CXX'] = possible_path
+                    break
             # Config
             extra_config_args = []
-            extra_config_args.append(f"-DPYTHON_LIBRARIES={sysconfig.get_config_var('LIBDEST')}")
+            # LDLIBRARY libpython3.9.so
+            # BINLIBDEST /usr/lib/x86_64-linux-gnu/python3.9
+            # LIBDIR /usr/lib/x86_64-linux-gnu 
+            extra_config_args.append(f"-DPYTHON_LIBRARY={sysconfig.get_config_var('LIBDIR')}/{sysconfig.get_config_var('LDLIBRARY')}")
             extra_config_args.append(f"-DPYTHON_INCLUDE_DIRS={sysconfig.get_config_var('INCLUDEPY')}") # this might need to be the subdir
             extra_config_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
-            extra_config_args.append(f"-DPYTHON_MAJOR={sys.version_info.major}")
-            extra_config_args.append(f"-DPYTHON_MINOR={sys.version_info.minor}")
             extra_config_args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
+            extra_config_args.append("-DCMAKE_CXX_COMPILER_LAUNCHER=ccache")
+            if env.get('CC'):
+                extra_config_args.append(f"-DCMAKE_C_COMPILER={env['CC']}")
+            if env.get('CXX'):
+                extra_config_args.append(f"-DCMAKE_CXX_COMPILER={env['CXX']}")
             if os.path.exists('/usr/include/boost69'):
                 extra_config_args.append(f"-DBOOST_INCLUDEDIR=/usr/include/boost169")
             if os.path.exists('/usr/lib64/boost169/'):
                 extra_config_args.append(f"-DBOOST_LIBRARYDIR=/usr/lib64/boost169")
-            subprocess.check_call(['cmake', "-S", extdir]+extra_config_args, cwd=self.build_temp, env=env)
-            
+            if platform.system() == "Windows":
+                extra_config_args += ["-G","MinGW Makefiles"]
+            #    extra_config_args += ["-G","Ninja"]
+            config_vars = ['cmake', "-S", extdir]+extra_config_args
+            try:
+                subprocess.check_call(config_vars, cwd=self.build_temp, env=env)
+            except Exception as e:
+                print(f"failed to run command {' '.join(config_vars)}")
+                raise e
             # Build
             if platform.system() == 'Windows':
                 subprocess.check_call(['cmake', '--build', '.', '--config', 'Release'],
                             cwd=self.build_temp)
             else:
-
                 subprocess.check_call(['cmake', '--build', '.'],
                             cwd=self.build_temp)
         # copy all the built files into the lib dir. Not sure why this is needed; it feels like setuptools should 
@@ -68,6 +84,6 @@ class cmake_build_ext(build_ext):
 
 setup(
       packages=['pylivarot'],
-      ext_modules = [Extension("pylivarot", ["pybind11", "lib2geom"])],
+      ext_modules = [Extension("pylivarot", ["pybind11"])],
       cmdclass = {'build_ext': cmake_build_ext}
 )

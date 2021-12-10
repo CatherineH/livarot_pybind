@@ -32,4 +32,14 @@ class TestPathBoolop:
         result = _path_builder.peek()
         output_path = py2geom.write_svg_path(result)
         assert output_path == "M 0 0 C 10 20 20 50 40 80"
+
+    def test_close_path(self):
+        _path_builder = py2geom.PathBuilder()
+        _path_builder.lineTo(py2geom.Point(10, 20))
+        _path_builder.closePath()
+        _path_builder.lineTo(py2geom.Point(30, 40))
+        _path_builder.flush()
+        result = _path_builder.peek()
+        output_path = py2geom.write_svg_path(result)
+        assert output_path == "M 0 0 L 10 20 z M 0 0 L 30 40"
     
