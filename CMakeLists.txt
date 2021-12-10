@@ -3,14 +3,14 @@ project(LivarotPy)
 # this is unfortunately required in order to make a "manylinux" wheel suitable for pypi
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_FLAGS "-static-libstdc++ -static-libgcc -fpermissive" ) # -std=c++17 needed for windows/msys2
-set(Python3_INCLUDE_DIR ${PYTHON_INCLUDE_DIRS})
-set(Python3_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
-set(Python3_LIBRARY ${PYTHON_LIBRARY})
-set(Python3_EXECUTABLE ${PYTHON_EXECUTABLE})
+#set(Python3_INCLUDE_DIR ${PYTHON_INCLUDE_DIRS})
+#set(Python3_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
+#set(Python3_LIBRARY ${PYTHON_LIBRARY})
+#set(Python3_EXECUTABLE ${PYTHON_EXECUTABLE})
 
 
 #find_package(Boost 1.60 REQUIRED)
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 ${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION} EXACT REQUIRED COMPONENTS Interpreter Development)
 add_subdirectory(pybind11)
 
 

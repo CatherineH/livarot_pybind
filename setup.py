@@ -45,6 +45,9 @@ class cmake_build_ext(build_ext):
             extra_config_args.append(f"-DPYTHON_LIBRARY={sysconfig.get_config_var('LIBDIR')}/{sysconfig.get_config_var('LDLIBRARY')}")
             extra_config_args.append(f"-DPYTHON_INCLUDE_DIRS={sysconfig.get_config_var('INCLUDEPY')}") # this might need to be the subdir
             extra_config_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
+            extra_config_args.append(f"-DPYTHON_MAJOR_VERSION={sys.version_info.major}")
+            extra_config_args.append(f"-DPYTHON_MINOR_VERSION={sys.version_info.minor}")
+            
             extra_config_args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
             extra_config_args.append("-DCMAKE_CXX_COMPILER_LAUNCHER=ccache")
             if env.get('CC'):
