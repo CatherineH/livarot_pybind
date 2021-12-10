@@ -123,9 +123,11 @@ PYBIND11_MODULE(_pylivarot, m) {
         .def(py::init<>())
         .def("flush", &Geom::PathBuilder::flush)
         .def("moveTo", &Geom::PathBuilder::moveTo)
+        .def("arcTo", &Geom::PathBuilder::arcTo)
         .def("lineTo", &Geom::PathBuilder::lineTo)
         .def("quadTo", &Geom::PathBuilder::quadTo)
         .def("curveTo", &Geom::PathBuilder::curveTo)
+        .def("closePath", &Geom::PathBuilder::closePath)
         .def("peek", &Geom::PathBuilder::peek);
     py::class_<Geom::SVGPathParser>(m2geom, "SVGPathParser")
         .def(py::init<Geom::PathSink &>())
