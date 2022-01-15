@@ -188,8 +188,7 @@ def get_outline_offset(pathva, stroke_width):
     return py2geom.parse_svg_path(res_d)
 
 
-def get_outline(pathva, stroke_width):
-    bbox_only = False
+def get_outline(pathva, stroke_width, bbox_only = False):
     pathv = pathv_to_linear_and_cubic_beziers( pathva )
     if stroke_width < py2geom.EPSILON:
         # https://bugs.launchpad.net/inkscape/+bug/1244861

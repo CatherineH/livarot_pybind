@@ -12,4 +12,4 @@ CMakeCache.txt
 html
 latex
 *.conf
-.pypirc
+*pypirc

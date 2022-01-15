@@ -39,14 +39,14 @@ class cmake_build_ext(build_ext):
                     break
             # Config
             extra_config_args = []
-            # LDLIBRARY libpython3.9.so
-            # BINLIBDEST /usr/lib/x86_64-linux-gnu/python3.9
-            # LIBDIR /usr/lib/x86_64-linux-gnu 
-            extra_config_args.append(f"-DPYTHON_LIBRARY={sysconfig.get_config_var('LIBDIR')}/{sysconfig.get_config_var('LDLIBRARY')}")
-            extra_config_args.append(f"-DPYTHON_INCLUDE_DIRS={sysconfig.get_config_var('INCLUDEPY')}") # this might need to be the subdir
-            extra_config_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
+            if sysconfig.get_config_vars('prefix') != '/usr': # this is required to build on the pypa team manylinux docker image
+                extra_config_args.append(f"-DPython3_ROOT_DIR={sysconfig.get_config_var('prefix')}")
+            extra_config_args.append(f"-DPYTHON_MAJOR_VERSION={sys.version_info.major}")
+            extra_config_args.append(f"-DPYTHON_MINOR_VERSION={sys.version_info.minor}")
+            
             extra_config_args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
-            extra_config_args.append("-DCMAKE_CXX_COMPILER_LAUNCHER=ccache")
+            if os.path.exists('/usr/bin/ccache'):
+                extra_config_args.append("-DCMAKE_CXX_COMPILER_LAUNCHER=ccache")
             if env.get('CC'):
                 extra_config_args.append(f"-DCMAKE_C_COMPILER={env['CC']}")
             if env.get('CXX'):
@@ -74,9 +74,9 @@ class cmake_build_ext(build_ext):
         # copy all the built files into the lib dir. Not sure why this is needed; it feels like setuptools should 
         # copy the built files into the bdist by default
         lib_dir = os.path.join(self.build_lib, "pylivarot")
-        pylivarot_sos = glob(os.path.join(self.build_temp, f"*{sys.version_info.major}{sys.version_info.minor}*.so"))
+        pylivarot_sos = glob(os.path.join(self.build_temp, f"*{sys.version_info.major}{sys.version_info.minor}*.so")) + glob(os.path.join(self.build_temp, f"*{sys.version_info.major}{sys.version_info.minor}*.pyd"))
         if len(pylivarot_sos) == 0:
-            raise FileNotFoundError(f"could not find *{sys.version_info.major}{sys.version_info.minor}*.so in {os.listdir(self.build_temp)}")
+            raise FileNotFoundError(f"could not find *{sys.version_info.major}{sys.version_info.minor}*.so or pyd in {os.listdir(self.build_temp)}")
         for _file in pylivarot_sos:
             print("copying ", _file," to ", os.path.join(lib_dir, os.path.basename(_file)))
             shutil.move(_file, os.path.join(lib_dir, os.path.basename(_file)))
