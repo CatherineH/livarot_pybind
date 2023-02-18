@@ -73,17 +73,18 @@ class cmake_build_ext(build_ext):
                             cwd=self.build_temp)
         # copy all the built files into the lib dir. Not sure why this is needed; it feels like setuptools should 
         # copy the built files into the bdist by default
-        lib_dir = os.path.join(self.build_lib, "pylivarot")
         pylivarot_sos = glob(os.path.join(self.build_temp, f"*{sys.version_info.major}{sys.version_info.minor}*.so")) + glob(os.path.join(self.build_temp, f"*{sys.version_info.major}{sys.version_info.minor}*.pyd"))
         if len(pylivarot_sos) == 0:
             raise FileNotFoundError(f"could not find *{sys.version_info.major}{sys.version_info.minor}*.so or pyd in {os.listdir(self.build_temp)}")
+        os.makedirs(self.build_lib, exist_ok=True)
         for _file in pylivarot_sos:
-            print("copying ", _file," to ", os.path.join(lib_dir, os.path.basename(_file)))
-            shutil.move(_file, os.path.join(lib_dir, os.path.basename(_file)))
+            dst = os.path.join(self.build_lib, os.path.basename(_file))
+            print("copying ", _file," to ", dst)
+            shutil.move(_file, dst)
         
 
 setup(
       packages=['pylivarot'],
-      ext_modules = [Extension("pylivarot", ["pybind11"])],
+      ext_modules = [Extension("_pylivarot", ["pybind11"])],
       cmdclass = {'build_ext': cmake_build_ext}
 )

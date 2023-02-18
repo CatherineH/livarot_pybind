@@ -1,6 +1,6 @@
 [submodule "pybind11"]
 	path = pybind11
 	url = git@github.com:pybind/pybind11.git
-[submodule "lib2geom"]
+[submodule "lib2geom-inkscape"]
 	path = livarot/lib2geom
-	url = git@gitlab.com:milankie/lib2geom.git
+	url = https://gitlab.com/inkscape/lib2geom.git
