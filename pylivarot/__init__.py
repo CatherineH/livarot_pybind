@@ -5,6 +5,11 @@ sys.path.append(dirname(__file__))
 #mport _pylivarot.py2geom as py2geom
 from _pylivarot import *
 
+DEFAULT_FILL = 'oddeven'
+DEFAULT_BUTT = 'straight'
+DEFAULT_JOIN = 'straight'
+DEFAULT_MITERLIMIT = 1
+
 def Path_for_pathvector(epathv):
     """
     convert py2geom.PathVector to LivarotPath
@@ -155,26 +160,31 @@ def sp_pathvector_boolop(pathva, pathvb, bop, fra, frb, skip_conversion=False):
     return res.MakePathVector()
 
 
-def union(path_vector_a, path_vector_b):
-    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_union, FillRule.fill_oddEven, FillRule.fill_oddEven)
+def union(path_vector_a, path_vector_b, fra=DEFAULT_FILL, frb=DEFAULT_FILL):
+    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_union, _FillRule(fra), _FillRule(frb))
 
 
-def intersection(path_vector_a, path_vector_b):
-    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_inters, FillRule.fill_oddEven, FillRule.fill_oddEven)
+def intersection(path_vector_a, path_vector_b, fra=DEFAULT_FILL, frb=DEFAULT_FILL):
+    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_inters, _FillRule(fra), _FillRule(frb))
 
 
-def difference(path_vector_a, path_vector_b):
-    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_diff, FillRule.fill_oddEven, FillRule.fill_oddEven)
+def difference(path_vector_a, path_vector_b, fra=DEFAULT_FILL, frb=DEFAULT_FILL):
+    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_diff, _FillRule(fra), _FillRule(frb))
 
 
-def get_outline_offset(pathva, stroke_width):
+def symmetric_difference(path_vector_a, path_vector_b, fra=DEFAULT_FILL, frb=DEFAULT_FILL):
+    return sp_pathvector_boolop(path_vector_a, path_vector_b, bool_op.bool_op_symdiff, _FillRule(fra), _FillRule(frb))
+
+
+def get_outline_offset(pathva, stroke_width, butt=DEFAULT_BUTT, join=DEFAULT_JOIN, miterlimit=DEFAULT_MITERLIMIT):
     orig = Path()
     orig.LoadPathVector(pathva)
     res = Path()
     res.SetBackData(False)
-    butt = ButtType.butt_straight
-    join = JoinType.join_straight
-    orig.OutsideOutline(res, stroke_width, join, butt, 20.0)
+    butt = _ButtType(butt)
+    join = _JoinType(join)
+    miter = miterlimit * stroke_width
+    orig.OutsideOutline(res, stroke_width, join, butt, miter)
     if stroke_width >= 1:
         res.ConvertWithBackData(1.0)
     else:
@@ -188,15 +198,15 @@ def get_outline_offset(pathva, stroke_width):
     return py2geom.parse_svg_path(res_d)
 
 
-def get_outline(pathva, stroke_width, bbox_only = False):
+def get_outline(pathva, stroke_width, bbox_only = False, butt=DEFAULT_BUTT, join=DEFAULT_JOIN, miterlimit=DEFAULT_MITERLIMIT):
     pathv = pathv_to_linear_and_cubic_beziers( pathva )
     if stroke_width < py2geom.EPSILON:
         # https://bugs.launchpad.net/inkscape/+bug/1244861
         stroke_width = py2geom.EPSILON
     
-    butt = ButtType.butt_straight
-    join = JoinType.join_straight
-    miter = stroke_width
+    butt = _ButtType(butt)
+    join = _JoinType(join)
+    miter = miterlimit * stroke_width
     '''
     double miter = style->stroke_miterlimit.value * stroke_width;
 
@@ -268,3 +278,55 @@ def get_outline(pathva, stroke_width, bbox_only = False):
         stroke = origin.MakePathVector() #  Note origin was replaced above by stroke!
     
     return stroke
+
+
+_fillRules = {
+    'oddeven': FillRule.fill_oddEven,
+    'nonzero': FillRule.fill_nonZero,
+    'positive': FillRule.fill_positive,
+    'justdont': FillRule.fill_justDont,
+    'evenodd': FillRule.fill_oddEven, # svg compatibility
+    'none': FillRule.fill_oddEven, # svg compatibility
+}
+
+def _FillRule(fill):
+    if isinstance(fill, FillRule):
+        return fill
+    try:
+        return _fillRules[fill]
+    except KeyError as e:
+        raise ValueError('cannot make FillRule from %s' % repr(fill)) from None
+
+
+_buttTypes = {
+    'straight': ButtType.butt_straight,
+    'square': ButtType.butt_square,
+    'round': ButtType.butt_round,
+    'pointy': ButtType.butt_pointy,
+    'butt': ButtType.butt_straight, # svg compatibility
+}
+
+def _ButtType(butt):
+    if isinstance(butt, ButtType):
+        return butt
+    try:
+        return _buttTypes[butt]
+    except KeyError:
+        raise ValueError('cannot make ButtType from %s' % repr(butt)) from None
+
+
+_joinTypes = {
+    'straight': JoinType.join_straight,
+    'round': JoinType.join_round,
+    'pointy': JoinType.join_pointy,
+    'bevel': JoinType.join_straight, # svg compatibility
+    'miter': JoinType.join_pointy, # svg compatibility
+}
+
+def _JoinType(join):
+    if isinstance(join, JoinType):
+        return join
+    try:
+        return _joinTypes[join]
+    except KeyError:
+        raise ValueError('cannot make JoinType from %s' % repr(join)) from None
